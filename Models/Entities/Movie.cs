@@ -5,7 +5,7 @@ namespace MovieApi.Models.Entities;
 
 /// <summary>
 /// Represents a movie entity with core properties such as title, year, genre, and duration.
-/// Includes an optional one-to-one relationship with <see cref="MovieDetails"/> for extended information,
+/// Includes an optional one-to-one relationship with <see cref="MoviesDetails"/> for extended information,
 /// and a one-to-many relationship with <see cref="Review"/> representing user reviews.
 /// </summary>
 public class Movie
@@ -18,7 +18,7 @@ public class Movie
 	public int Id { get; set; }
 
 	/// <summary>
-	/// Foreign key to the associated <see cref="MovieDetails"/> entity.
+	/// Foreign key to the associated <see cref="MoviesDetails"/> entity.
 	/// </summary>
 	public int? MovieDetailsId { get; set; }
 
@@ -34,11 +34,11 @@ public class Movie
 	[Range(1850, 9999)]
 	public int Year { get; set; }
 
-	/// <summary>
-	/// Genre of the movie. Maximum length is 50 characters.
-	/// </summary>
-	[MaxLength(50)]
-	public string Genre { get; set; } = null!;
+	///// <summary>
+	///// Genre of the movie. Maximum length is 50 characters.
+	///// </summary>
+	//[MaxLength(50)]
+	//public string Genre { get; set; } = null!;
 
 	/// <summary>
 	/// Duration of the movie in minutes. Must be between 5 and 300 minutes.
@@ -49,8 +49,8 @@ public class Movie
 	/// <summary>
 	/// Navigation property for related <see cref="MovieDetails"/> entity.
 	/// </summary>
-	[ForeignKey("MovieDetailsId")]
-	public MovieDetails? MovieDetails { get; set; } = null!;
+	[ForeignKey(nameof(MovieDetailsId))]
+	public MovieDetails? MoviesDetails { get; set; } = null!;
 
 	/// <summary>
 	/// Collection of <see cref="Review"/> entities related to this movie.
@@ -59,8 +59,14 @@ public class Movie
 	public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
 	/// <summary>
-	/// Navigation property representing the collection of <see cref="Actors"/> entities
+	/// Navigation property representing the collection of <see cref="Actor"/> entities
 	/// associated with this Movies in a many-to-many relationship.
 	/// </summary>
-	public ICollection<Actor> Actors { get; set; }
+	public ICollection<Actor> Actors { get; set; } = new List<Actor>();
+
+	/// <summary>
+	/// Navigation property representing the collection of <see cref="MovieGenre"/> entities
+	/// Represents the one-to-many relationship where a movie can have many genres.
+	/// </summary>
+	public ICollection<MovieGenre> movieGenres { get; set; } = new List<MovieGenre>();
 }

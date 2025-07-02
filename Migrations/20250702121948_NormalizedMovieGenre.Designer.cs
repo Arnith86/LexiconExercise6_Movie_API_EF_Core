@@ -11,8 +11,8 @@ using MovieApi.Data;
 namespace MovieApi.Migrations
 {
     [DbContext(typeof(MovieApiContext))]
-    [Migration("20250702093621_AddedRelations")]
-    partial class AddedRelations
+    [Migration("20250702121948_NormalizedMovieGenre")]
+    partial class NormalizedMovieGenre
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,11 +71,6 @@ namespace MovieApi.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int?>("MovieDetailsId")
                         .HasColumnType("int");
 
@@ -92,7 +87,7 @@ namespace MovieApi.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("MovieApi.Models.Entities.MoviesDetails", b =>
+            modelBuilder.Entity("MovieApi.Models.Entities.MovieDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -122,7 +117,24 @@ namespace MovieApi.Migrations
                         .IsUnique()
                         .HasFilter("[MovieId] IS NOT NULL");
 
-                    b.ToTable("MoviesDetails");
+                    b.ToTable("MovieDetails");
+                });
+
+            modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Genre")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("MovieId", "Genre");
+
+                    b.HasIndex("MovieId", "Genre")
+                        .IsUnique();
+
+                    b.ToTable("MovieGenre");
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.Review", b =>
@@ -171,11 +183,22 @@ namespace MovieApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MovieApi.Models.Entities.MoviesDetails", b =>
+            modelBuilder.Entity("MovieApi.Models.Entities.MovieDetails", b =>
                 {
                     b.HasOne("MovieApi.Models.Entities.Movie", "Movie")
                         .WithOne("MoviesDetails")
-                        .HasForeignKey("MovieApi.Models.Entities.MoviesDetails", "MovieId");
+                        .HasForeignKey("MovieApi.Models.Entities.MovieDetails", "MovieId");
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
+                {
+                    b.HasOne("MovieApi.Models.Entities.Movie", "Movie")
+                        .WithMany("movieGenres")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Movie");
                 });
@@ -196,6 +219,8 @@ namespace MovieApi.Migrations
                     b.Navigation("MoviesDetails");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("movieGenres");
                 });
 #pragma warning restore 612, 618
         }

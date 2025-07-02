@@ -46,7 +46,7 @@ public class MovieDetails
 	/// <summary>
 	/// Navigation property for the associated <see cref="Movie"/>.
 	/// </summary>
-	[ForeignKey("MovieId")]
+	[ForeignKey(nameof(MovieId))]
 	public Movie? Movie { get; set; } = null!;
 
 }

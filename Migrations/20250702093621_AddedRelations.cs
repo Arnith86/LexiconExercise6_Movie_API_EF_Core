@@ -66,7 +66,7 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieDetails",
+                name: "MoviesDetails",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -115,7 +115,7 @@ namespace MovieApi.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieDetails_MovieId",
-                table: "MovieDetails",
+                table: "MoviesDetails",
                 column: "MovieId",
                 unique: true,
                 filter: "[MovieId] IS NOT NULL");
@@ -133,7 +133,7 @@ namespace MovieApi.Migrations
                 name: "ActorMovie");
 
             migrationBuilder.DropTable(
-                name: "MovieDetails");
+                name: "MoviesDetails");
 
             migrationBuilder.DropTable(
                 name: "Reviews");

@@ -18,9 +18,9 @@ public class MovieApiContext : DbContext
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 
-		// Sets up a 1:1 relationship between Movies and MovieDetails. Can be null.
+		// Sets up a 1:1 relationship between Movies and MoviesDetails. Can be null.
 		modelBuilder.Entity<Movie>()
-			.HasOne(m => m.MovieDetails)
+			.HasOne(m => m.MoviesDetails)
 			.WithOne(md => md.Movie)
 			.HasForeignKey<MovieDetails>(md => md.MovieId)
 			.IsRequired(false);
@@ -32,6 +32,15 @@ public class MovieApiContext : DbContext
 			.WithMany(r => r.Reviews)
 			.HasForeignKey(r => r.MovieId);
 
+		// Defines the composite primary key of MovieGenre
+		modelBuilder.Entity<MovieGenre>().HasKey(mg => new { mg.MovieId, mg.Genre });
+
+
+		// Sets up a 1:N relationship between Movies and MoviesGenre. Can be null.
+		modelBuilder.Entity<MovieGenre>()
+			.HasOne(m => m.Movie)
+			.WithMany(mg => mg.movieGenres)
+			.HasForeignKey(mg => mg.MovieId);
 
 		base.OnModelCreating(modelBuilder);
 	}
