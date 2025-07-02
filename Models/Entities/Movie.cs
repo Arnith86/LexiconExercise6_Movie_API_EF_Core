@@ -34,12 +34,6 @@ public class Movie
 	[Range(1850, 9999)]
 	public int Year { get; set; }
 
-	///// <summary>
-	///// Genre of the movie. Maximum length is 50 characters.
-	///// </summary>
-	//[MaxLength(50)]
-	//public string Genre { get; set; } = null!;
-
 	/// <summary>
 	/// Duration of the movie in minutes. Must be between 5 and 300 minutes.
 	/// </summary>

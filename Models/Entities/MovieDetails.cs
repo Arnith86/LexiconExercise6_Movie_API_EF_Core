@@ -37,16 +37,15 @@ public class MovieDetails
 	public string Language { get; set; } = null!;
 
 	/// <summary>
-	/// Gets or sets the budget of the movie.
-	/// The budget value must be between 0 and 500,000,000$.
+	/// Gets or sets the Budget of the movie.
+	/// The Budget value must be between 0 and 500,000,000$.
 	/// </summary>
 	[Range(0, 500000000)]
-	public int budget { get; set; }
+	public int Budget { get; set; }
 
 	/// <summary>
 	/// Navigation property for the associated <see cref="Movie"/>.
 	/// </summary>
-	[ForeignKey(nameof(MovieId))]
 	public Movie? Movie { get; set; } = null!;
 
 }
