@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "gaj3XX6ZuYo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Arnit\\Documents\\GitHub\\Lexicon\\LexiconExercise6_Movie_API_EF_Core\\MovieApi\\MovieApi\\MovieApi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Arnit\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.6\\microsoft.aspnetcore.openapi.9.0.6.nupkg.sha512",
+    "C:\\Users\\Arnit\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
