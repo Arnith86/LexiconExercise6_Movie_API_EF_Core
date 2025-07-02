@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MovieApi.Models.Entities;
 
 /// <summary>
-/// Represents a movie entity with basic information such as title, year, genre, duration, and related <see cref="MovieDetails"/>.
+/// Represents a movie entity with core properties such as title, year, genre, and duration.
+/// Includes an optional one-to-one relationship with <see cref="MovieDetails"/> for extended information,
+/// and a one-to-many relationship with <see cref="Review"/> representing user reviews.
 /// </summary>
 public class Movie
 {
@@ -19,12 +21,6 @@ public class Movie
 	/// Foreign key to the associated <see cref="MovieDetails"/> entity.
 	/// </summary>
 	public int? MovieDetailsId { get; set; }
-
-	/// <summary>
-	/// Foreign key to the associated <see cref="Review"/> entity.
-	/// </summary>
-	public int? ReviewId { get; set; }
-
 
 	/// <summary>
 	/// Title of the movie. Maximum length is 100 characters.
@@ -57,8 +53,14 @@ public class Movie
 	public MovieDetails? MovieDetails { get; set; } = null!;
 
 	/// <summary>
-	/// Navigation property for related <see cref="Review"/> entity.
+	/// Collection of <see cref="Review"/> entities related to this movie.
+	/// Represents the one-to-many relationship where a movie can have many reviews.
 	/// </summary>
-	[ForeignKey("ReviewId")]
-	public Review? Review { get; set; }  
+	public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+	/// <summary>
+	/// Navigation property representing the collection of <see cref="Actors"/> entities
+	/// associated with this Movies in a many-to-many relationship.
+	/// </summary>
+	public ICollection<Actor> Actors { get; set; }
 }
