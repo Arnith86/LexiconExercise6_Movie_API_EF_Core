@@ -113,7 +113,7 @@ namespace MovieApi.Migrations
                         .HasMaxLength(400)
                         .HasColumnType("nvarchar(400)");
 
-                    b.Property<int>("budget")
+                    b.Property<int>("Budget")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
