@@ -9,23 +9,11 @@ namespace MovieApi.Models.Entities;
 /// Represents the link between a movie and one of its genres.
 /// Each combination of MovieId and Genre is unique.
 /// </summary>
-[Index(nameof(MovieId), nameof(Genre), IsUnique = true)]
+//[Index(nameof(MovieId), nameof(Genre), IsUnique = true)]
 public class MovieGenre
 {
-	/// <summary>
-	/// Foreign key referencing the related movie.
-	/// </summary>
-	public int MovieId { get; set; }
-
-	/// <summary>
-	/// Genre of the movie. Maximum length is 50 characters.
-	/// </summary>
+	public int Id { get; set; }
 	[MaxLength(50)]
 	public string Genre { get; set; } = null!;
-
-	/// <summary>
-	/// Navigation property to the related movie.
-	/// </summary>
-	[ForeignKey(nameof(MovieId))]
-	public Movie Movie { get; set; } = null!;
+	public ICollection<Movie> Movies { get; set; } = new List<Movie>();
 }

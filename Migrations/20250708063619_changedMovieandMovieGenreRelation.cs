@@ -5,7 +5,7 @@
 namespace MovieApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedRelations : Migration
+    public partial class changedMovieandMovieGenreRelation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,20 +25,38 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MovieGenres",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Genre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MovieGenres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Movies",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MovieDetailsId = table.Column<int>(type: "int", nullable: true),
+                    MovieGenreId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    Genre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Movies_MovieGenres_MovieGenreId",
+                        column: x => x.MovieGenreId,
+                        principalTable: "MovieGenres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,15 +84,15 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MoviesDetails",
+                name: "MovieDetails",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MovieId = table.Column<int>(type: "int", nullable: true),
+                    MovieId = table.Column<int>(type: "int", nullable: false),
                     Synopsis = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: false),
                     Language = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    budget = table.Column<int>(type: "int", nullable: false)
+                    Budget = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,7 +101,8 @@ namespace MovieApi.Migrations
                         name: "FK_MovieDetails_Movies_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,10 +134,14 @@ namespace MovieApi.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieDetails_MovieId",
-                table: "MoviesDetails",
+                table: "MovieDetails",
                 column: "MovieId",
-                unique: true,
-                filter: "[MovieId] IS NOT NULL");
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movies_MovieGenreId",
+                table: "Movies",
+                column: "MovieGenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_MovieId",
@@ -133,7 +156,7 @@ namespace MovieApi.Migrations
                 name: "ActorMovie");
 
             migrationBuilder.DropTable(
-                name: "MoviesDetails");
+                name: "MovieDetails");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -143,6 +166,9 @@ namespace MovieApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Movies");
+
+            migrationBuilder.DropTable(
+                name: "MovieGenres");
         }
     }
 }

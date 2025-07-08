@@ -68,7 +68,7 @@ namespace MovieApi.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MovieDetailsId")
+                    b.Property<int>("MovieGenreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -80,6 +80,8 @@ namespace MovieApi.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MovieGenreId");
 
                     b.ToTable("Movies");
                 });
@@ -100,7 +102,7 @@ namespace MovieApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("MovieId")
+                    b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<string>("Synopsis")
@@ -111,27 +113,27 @@ namespace MovieApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId")
-                        .IsUnique()
-                        .HasFilter("[MovieId] IS NOT NULL");
+                        .IsUnique();
 
-                    b.ToTable("MovieDetails");
+                    b.ToTable("MoviesDetails", (string)null);
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
                 {
-                    b.Property<int>("MovieId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Genre")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("MovieId", "Genre");
+                    b.HasKey("Id");
 
-                    b.HasIndex("MovieId", "Genre")
-                        .IsUnique();
-
-                    b.ToTable("MovieGenre");
+                    b.ToTable("MovieGenres");
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.Review", b =>
@@ -180,20 +182,22 @@ namespace MovieApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MovieApi.Models.Entities.Movie", b =>
+                {
+                    b.HasOne("MovieApi.Models.Entities.MovieGenre", "MoviesGenre")
+                        .WithMany("Movies")
+                        .HasForeignKey("MovieGenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MoviesGenre");
+                });
+
             modelBuilder.Entity("MovieApi.Models.Entities.MovieDetails", b =>
                 {
                     b.HasOne("MovieApi.Models.Entities.Movie", "Movie")
                         .WithOne("MoviesDetails")
-                        .HasForeignKey("MovieApi.Models.Entities.MovieDetails", "MovieId");
-
-                    b.Navigation("Movie");
-                });
-
-            modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
-                {
-                    b.HasOne("MovieApi.Models.Entities.Movie", "Movie")
-                        .WithMany("movieGenres")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("MovieApi.Models.Entities.MovieDetails", "MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -216,8 +220,11 @@ namespace MovieApi.Migrations
                     b.Navigation("MoviesDetails");
 
                     b.Navigation("Reviews");
+                });
 
-                    b.Navigation("movieGenres");
+            modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
+                {
+                    b.Navigation("Movies");
                 });
 #pragma warning restore 612, 618
         }

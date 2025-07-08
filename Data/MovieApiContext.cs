@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MovieApi.Data.Configurations;
 using MovieApi.Models.Entities;
 
 namespace MovieApi.Data;
@@ -10,20 +11,18 @@ public class MovieApiContext : DbContext
 	{
 	}
 
-	public DbSet<MovieApi.Models.Entities.Movie> Movies { get; set; } = default!;
+	public DbSet<Movie> Movies { get; set; } = default!;
 	public DbSet<MovieDetails> MovieDetails { get; set; } = default!;
+	public DbSet<MovieGenre> MovieGenres { get; set; } = default!;
 	public DbSet<Review> Reviews { get; set; } = default!;
 	public DbSet<Actor> Actors { get; set; } = default!;
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
+		base.OnModelCreating(modelBuilder);
 
-		// Sets up a 1:1 relationship between Movies and MoviesDetails. Can be null.
-		modelBuilder.Entity<Movie>()
-			.HasOne(m => m.MoviesDetails)
-			.WithOne(md => md.Movie)
-			.HasForeignKey<MovieDetails>(md => md.MovieId)
-			.IsRequired(false);
+		modelBuilder.ApplyConfiguration(new MovieDetailsConfigurations());
+	
 
 
 		// Sets up a 1:N relationship between Movies and Review. Can not be null.
@@ -32,16 +31,28 @@ public class MovieApiContext : DbContext
 			.WithMany(r => r.Reviews)
 			.HasForeignKey(r => r.MovieId);
 
-		// Defines the composite primary key of MovieGenre
-		modelBuilder.Entity<MovieGenre>().HasKey(mg => new { mg.MovieId, mg.Genre });
+		//// Defines the composite primary key of MovieGenre -- not used right now 
+		//modelBuilder.Entity<MovieGenre>()
+		//	.HasKey(mg => new { mg.MovieId, mg.Genre });
 
 
-		// Sets up a 1:N relationship between Movies and MoviesGenre. Can be null.
+		//// Sets up a 1:N relationship between Movies and MoviesGenre. Can be null.
+		//modelBuilder.Entity<MovieGenre>()
+		//	.HasOne(mg => mg.Movie)
+		//	.WithMany(m => m.MovieGenres)
+		//	.HasForeignKey(mg => mg.MovieId)
+		//	.OnDelete(DeleteBehavior.Cascade);
+
+		// Sets up a N:1 relationship between Movies and MoviesGenre. Can be null.
 		modelBuilder.Entity<MovieGenre>()
-			.HasOne(m => m.Movie)
-			.WithMany(mg => mg.movieGenres)
-			.HasForeignKey(mg => mg.MovieId);
+			.HasMany(m => m.Movies)
+			.WithOne(mg => mg.MoviesGenre)
+			.HasForeignKey(m => m.MovieGenreId)
+			.OnDelete(DeleteBehavior.Cascade);
 
-		base.OnModelCreating(modelBuilder);
+
+
+
+
 	}
 }
