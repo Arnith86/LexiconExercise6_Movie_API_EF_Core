@@ -5,6 +5,7 @@ using MovieApi.Models.DTOs.MovieDtos;
 using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Swagger;
+using System.ComponentModel;
 
 namespace MovieApi.Controllers;
 
@@ -20,11 +21,22 @@ public class MoviesController : ControllerBase
 	}
 
 
-
 	// GET: api/Movies
+	/// <summary>
+	/// Retrieves all registered movies with basic details and their associated genre.
+	/// </summary>
+	/// <remarks>
+	/// This endpoint returns a simplified list of movies. Each movie includes:
+	/// Id, Title, Genre (as a string), Duration, Release Year
+	/// </remarks>
+	/// <returns>A list of movies with basic information and genre.</returns>
+	/// <response code="200">Returns the list of movies successfully.</response>
 	[HttpGet]
-	[SwaggerOperation(Summary = "")]
-	public async Task<ActionResult<IEnumerable<MovieBaseWithGenreDto>>> GetMovie()
+	[SwaggerOperation(
+		Summary = "Retrieve all movies",
+		Description = "Returns a simplified list of all registered movies including basic details and genre.")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieBaseWithGenreDto>))]
+	public async Task<ActionResult<IEnumerable<MovieBaseWithGenreDto>>> GetMovies()
 	{
 		List<MovieBaseWithGenreDto> movieBaseWithGenreDtos = await _context.Movies.
 			Include(mg => mg.MoviesGenre)
