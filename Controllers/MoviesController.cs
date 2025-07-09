@@ -35,23 +35,23 @@ public class MoviesController : ControllerBase
 	[SwaggerOperation(
 		Summary = "Retrieve all movies",
 		Description = "Returns a simplified list of all registered movies including basic details and genre.")]
-	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieBaseWithGenreDto>))]
-	public async Task<ActionResult<IEnumerable<MovieBaseWithGenreDto>>> GetMovies()
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieWithGenreDto>))]
+	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies()
 	{
 		// Todo: use automapper
-		List<MovieBaseWithGenreDto> movieBaseWithGenreDtos = await _context.Movies.
+		List<MovieWithGenreDto> movieWithGenreDtos = await _context.Movies.
 			Include(mg => mg.MoviesGenre)
-			.Select(mbwgdto => new MovieBaseWithGenreDto
+			.Select(mwg => new MovieWithGenreDto
 			{
-				Id = mbwgdto.Id,
-				Duration = mbwgdto.Duration,
-				Year = mbwgdto.Year,
-				Title = mbwgdto.Title,
-				Genre = mbwgdto.MoviesGenre!.Genre
+				Id = mwg.Id,
+				Duration = mwg.Duration,
+				Year = mwg.Year,
+				Title = mwg.Title,
+				Genre = mwg.MoviesGenre!.Genre
 			})
 			.ToListAsync();
 
-		return Ok(movieBaseWithGenreDtos);
+		return Ok(movieWithGenreDtos);
 	}
 
 	// GET: api/Movies/5
@@ -70,30 +70,74 @@ public class MoviesController : ControllerBase
 	[SwaggerOperation(
 		Summary = "Get a specific movie by ID",
 		Description = "Returns simplified movie details for the movie with the given ID, including genre info.")]
-	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieBaseWithGenreDto))]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDto))]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	public async Task<ActionResult<MovieBaseWithGenreDto>> GetMovie(int id)
+	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id)
 	{
 		// Todo: use automapper
-		var movieBaseWithGenreDto = await _context.Movies
-			.Include(mbwgdto => mbwgdto.MoviesGenre)
-			.Select(mbwgdto => new MovieBaseWithGenreDto
+		var movieWithGenreDto = await _context.Movies
+			.Include(mwg => mwg.MoviesGenre)
+			.Select(mwg => new MovieWithGenreDto
 			{
-				Id = mbwgdto.Id,
-				Duration = mbwgdto.Duration,
-				Year = mbwgdto.Year,
-				Title = mbwgdto.Title,
-				Genre = mbwgdto.MoviesGenre!.Genre
+				Id = mwg.Id,
+				Duration = mwg.Duration,
+				Year = mwg.Year,
+				Title = mwg.Title,
+				Genre = mwg.MoviesGenre!.Genre
+			})
+			.FirstOrDefaultAsync(mwg => mwg.Id == id);
+
+		if (movieWithGenreDto is null) return NotFound();
+
+		return Ok(movieWithGenreDto);
+	}
+
+	// GET: api/Movies/5/details
+	/// <summary>
+	/// Retrieves a simplified representation of a specific movie by its ID, with more detailed information.
+	/// </summary>
+	/// <param name="id">The unique identifier of the movie.</param>
+	/// <remarks>
+	/// Returns movie details including:
+	/// - Id, Title, Genre (as a string), Duration, Release Year
+	/// - Synopsis, Language and Budget
+	/// </remarks>
+	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
+	/// <response code="200">Returns the requested movie.</response>
+	/// <response code="404">If no movie with the specified ID exists.</response>
+	[HttpGet("{id}/details")]
+	[SwaggerOperation(
+		Summary = "Get a specific movie by ID",
+		Description = "Returns movie details for the movie with the given ID, including genre info and details.")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDetailsDto))]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id)
+	{
+		// Todo: use automapper
+		var movieWithGenreDetailsDto = await _context.Movies
+			.Include(mwgd => mwgd.MoviesDetails)
+			.Include(mwgd => mwgd.MoviesGenre)
+			.Select(mwgd => new MovieWithGenreDetailsDto
+			{
+				Id = mwgd.Id,
+				Duration = mwgd.Duration,
+				Year = mwgd.Year,
+				Title = mwgd.Title,
+				Genre = mwgd.MoviesGenre!.Genre,
+				Synopsis = mwgd.MoviesDetails!.Synopsis,
+				Language = mwgd.MoviesDetails!.Language,
+				Budget = mwgd.MoviesDetails.Budget
 			})
 			.FirstOrDefaultAsync(mbwgdto => mbwgdto.Id == id);
 
-		if (movieBaseWithGenreDto is null) return NotFound();
+		if (movieWithGenreDetailsDto is null) return NotFound();
 
-		return Ok(movieBaseWithGenreDto);
+		return Ok(movieWithGenreDetailsDto);
 	}
 
+
+
 	// PUT: api/Movies/5
-	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPut("{id}")]
 	public async Task<IActionResult> PutMovie(int id, Movie movie)
 	{

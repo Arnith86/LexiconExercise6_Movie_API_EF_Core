@@ -11,8 +11,8 @@ public class MovieDetails
 {
 	public int Id { get; set; }
 	public int MovieId { get; set; }
-	public string Synopsis { get; set; } = null!;
-	public string Language { get; set; } = null!;
+	public string? Synopsis { get; set; } = null!;
+	public string? Language { get; set; } = null!;
 
 	/// <summary>
 	/// Gets or sets the Budget of the movie.
