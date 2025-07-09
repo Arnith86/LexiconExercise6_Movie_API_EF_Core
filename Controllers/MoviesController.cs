@@ -159,7 +159,6 @@ public class MoviesController : ControllerBase
 
 		var genre = await _context.MovieGenres.FirstOrDefaultAsync(g => g.Id == movieCreateDto.MovieGenreId);
 
-		// Todo: will this send readable error to user?
 		if (genre is null) return BadRequest($"No genre with ID {movieCreateDto.MovieGenreId} was found.");
 
 		// use automapper
@@ -188,15 +187,54 @@ public class MoviesController : ControllerBase
 	}
 
 	// PUT: api/Movies/5
+	/// <summary>
+	/// Updates an existing movie with new title, year, duration, and genre.
+	/// </summary>
+	/// <param name="id">The ID of the movie to update.</param>
+	/// <param name="movieWithGenreIdUpdateDto">The updated movie data.</param>
+	/// <returns>No content on success; NotFound if the movie is not found; error if concurrency conflict occurs.</returns>
+	/// <response code="204">The movie was successfully updated.</response>
+	/// <response code="404">No movie with the specified ID was found.</response>
+	/// <response code="400">No genre with the specified MovieGenreIdwas found.</response>
 	[HttpPut("{id}")]
-	public async Task<IActionResult> PutMovie(int id, Movie movie)
+	[SwaggerOperation(
+	Summary = "Update an existing movie.",
+	Description = "Updates an existing movie's title, year, duration, and associated genre. Requires the movie ID and the updated data."
+)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+	public async Task<IActionResult> PutMovie(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
 	{
-		if (id != movie.Id)
-		{
-			return BadRequest();
-		}
+		var movie = await _context.Movies
+			.FirstOrDefaultAsync(m => m.Id == id);
+		
+		if (movie is null) 
+			return NotFound($"No movie with id {id} was found.");
 
-		_context.Entry(movie).State = EntityState.Modified;
+		var genre = await _context.MovieGenres
+			.FirstOrDefaultAsync(g => g.Id == movieWithGenreIdUpdateDto.MovieGenreId);
+		
+		if (genre is null)
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status400BadRequest,
+				Title = "Invalid genre ID",
+				Detail = $"No genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return BadRequest(problemDetails);
+		}
+			
+
+		// ToDo: use automapper
+		movie.Title = movieWithGenreIdUpdateDto.Title;
+		movie.Year = movieWithGenreIdUpdateDto.Year;
+		movie.Duration = movieWithGenreIdUpdateDto.Duration;
+		movie.MovieGenreId = movieWithGenreIdUpdateDto.MovieGenreId;
+
 
 		try
 		{
