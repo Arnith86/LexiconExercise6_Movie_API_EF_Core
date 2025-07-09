@@ -9,6 +9,7 @@ namespace MovieApi.Data.Configurations
 	{
 		public void Configure(EntityTypeBuilder<MovieDetails> builder)
 		{
+			// Has a 1:1 relationship between Movies and MoviesDetails. 
 			builder.HasKey(md => md.Id);
 
 			builder.Property(md => md.Synopsis)
@@ -17,13 +18,9 @@ namespace MovieApi.Data.Configurations
 			builder.Property(md => md.Language)
 				.HasMaxLength(50);
 
-			// Sets up a 1:1 relationship between Movies and MoviesDetails. 
-			builder.HasOne(md => md.Movie)
-				.WithOne(m => m.MoviesDetails)
-				.HasForeignKey<MovieDetails>(m => m.MovieId)
-				.IsRequired(true);
+		
 
-			builder.ToTable("MoviesDetails");
+			builder.ToTable("MoviesDetail");
 		}
 	}
 }

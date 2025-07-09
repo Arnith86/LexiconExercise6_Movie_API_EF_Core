@@ -13,7 +13,6 @@ namespace MovieApi.Models.Entities;
 public class MovieGenre
 {
 	public int Id { get; set; }
-	[MaxLength(50)]
 	public string Genre { get; set; } = null!;
 	public ICollection<Movie> Movies { get; set; } = new List<Movie>();
 }

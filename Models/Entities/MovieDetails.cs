@@ -9,10 +9,8 @@ namespace MovieApi.Models.Entities;
 /// </summary>
 public class MovieDetails
 {
-
-	//[DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-Increment for primary key - still needed?
 	public int Id { get; set; }
-	public int? MovieId { get; set; }
+	public int MovieId { get; set; }
 	public string Synopsis { get; set; } = null!;
 	public string Language { get; set; } = null!;
 

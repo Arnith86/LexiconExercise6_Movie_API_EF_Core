@@ -11,8 +11,8 @@ using MovieApi.Data;
 namespace MovieApi.Migrations
 {
     [DbContext(typeof(MovieApiContext))]
-    [Migration("20250708081532_flowAPIUsedForMovieDetails")]
-    partial class flowAPIUsedForMovieDetails
+    [Migration("20250709062747_TableNameChangedMoviesGenre")]
+    partial class TableNameChangedMoviesGenre
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,7 +57,10 @@ namespace MovieApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actors");
+                    b.ToTable("Actor", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Actor_BirthYear_MinValue", "[BirthYear] >= 1850");
+                        });
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.Movie", b =>
@@ -118,7 +121,7 @@ namespace MovieApi.Migrations
                     b.HasIndex("MovieId")
                         .IsUnique();
 
-                    b.ToTable("MoviesDetails", (string)null);
+                    b.ToTable("MoviesDetail", (string)null);
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.MovieGenre", b =>
@@ -136,7 +139,7 @@ namespace MovieApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovieGenres");
+                    b.ToTable("MoviesGenre", (string)null);
                 });
 
             modelBuilder.Entity("MovieApi.Models.Entities.Review", b =>
@@ -167,7 +170,7 @@ namespace MovieApi.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("ActorMovie", b =>

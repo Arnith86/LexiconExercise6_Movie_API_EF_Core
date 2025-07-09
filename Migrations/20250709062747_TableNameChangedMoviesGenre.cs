@@ -5,13 +5,13 @@
 namespace MovieApi.Migrations
 {
     /// <inheritdoc />
-    public partial class changedMovieandMovieGenreRelation : Migration
+    public partial class TableNameChangedMoviesGenre : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Actors",
+                name: "Actor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,11 +21,12 @@ namespace MovieApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Actors", x => x.Id);
+                    table.PrimaryKey("PK_Actor", x => x.Id);
+                    table.CheckConstraint("CK_Actor_BirthYear_MinValue", "[BirthYear] >= 1850");
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieGenres",
+                name: "MoviesGenre",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -34,7 +35,7 @@ namespace MovieApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieGenres", x => x.Id);
+                    table.PrimaryKey("PK_MoviesGenre", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,9 +53,9 @@ namespace MovieApi.Migrations
                 {
                     table.PrimaryKey("PK_Movies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Movies_MovieGenres_MovieGenreId",
+                        name: "FK_Movies_MoviesGenre_MovieGenreId",
                         column: x => x.MovieGenreId,
-                        principalTable: "MovieGenres",
+                        principalTable: "MoviesGenre",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -70,9 +71,9 @@ namespace MovieApi.Migrations
                 {
                     table.PrimaryKey("PK_ActorMovie", x => new { x.ActorsId, x.MoviesId });
                     table.ForeignKey(
-                        name: "FK_ActorMovie_Actors_ActorsId",
+                        name: "FK_ActorMovie_Actor_ActorsId",
                         column: x => x.ActorsId,
-                        principalTable: "Actors",
+                        principalTable: "Actor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -84,7 +85,7 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieDetails",
+                name: "MoviesDetail",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -96,9 +97,9 @@ namespace MovieApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieDetails", x => x.Id);
+                    table.PrimaryKey("PK_MoviesDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovieDetails_Movies_MovieId",
+                        name: "FK_MoviesDetail_Movies_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "Id",
@@ -106,7 +107,7 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reviews",
+                name: "Review",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -118,9 +119,9 @@ namespace MovieApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("PK_Review", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Movies_MovieId",
+                        name: "FK_Review_Movies_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "Id",
@@ -133,19 +134,19 @@ namespace MovieApi.Migrations
                 column: "MoviesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieDetails_MovieId",
-                table: "MovieDetails",
-                column: "MovieId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Movies_MovieGenreId",
                 table: "Movies",
                 column: "MovieGenreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_MovieId",
-                table: "Reviews",
+                name: "IX_MoviesDetail_MovieId",
+                table: "MoviesDetail",
+                column: "MovieId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_MovieId",
+                table: "Review",
                 column: "MovieId");
         }
 
@@ -156,19 +157,19 @@ namespace MovieApi.Migrations
                 name: "ActorMovie");
 
             migrationBuilder.DropTable(
-                name: "MovieDetails");
+                name: "MoviesDetail");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Actors");
+                name: "Actor");
 
             migrationBuilder.DropTable(
                 name: "Movies");
 
             migrationBuilder.DropTable(
-                name: "MovieGenres");
+                name: "MoviesGenre");
         }
     }
 }

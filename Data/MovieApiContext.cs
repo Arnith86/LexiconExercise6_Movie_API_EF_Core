@@ -22,14 +22,10 @@ public class MovieApiContext : DbContext
 		base.OnModelCreating(modelBuilder);
 
 		modelBuilder.ApplyConfiguration(new MovieDetailsConfigurations());
-	
-
-
-		// Sets up a 1:N relationship between Movies and Review. Can not be null.
-		modelBuilder.Entity<Review>()
-			.HasOne(m => m.Movie)
-			.WithMany(r => r.Reviews)
-			.HasForeignKey(r => r.MovieId);
+		modelBuilder.ApplyConfiguration(new ReviewConfigurations());
+		modelBuilder.ApplyConfiguration(new MovieGenreConfigurations());
+		modelBuilder.ApplyConfiguration(new ActorConfigurations());
+		modelBuilder.ApplyConfiguration(new MovieConfigurations());
 
 		//// Defines the composite primary key of MovieGenre -- not used right now 
 		//modelBuilder.Entity<MovieGenre>()
@@ -42,16 +38,6 @@ public class MovieApiContext : DbContext
 		//	.WithMany(m => m.MovieGenres)
 		//	.HasForeignKey(mg => mg.MovieId)
 		//	.OnDelete(DeleteBehavior.Cascade);
-
-		// Sets up a N:1 relationship between Movies and MoviesGenre. Can be null.
-		modelBuilder.Entity<MovieGenre>()
-			.HasMany(m => m.Movies)
-			.WithOne(mg => mg.MoviesGenre)
-			.HasForeignKey(m => m.MovieGenreId)
-			.OnDelete(DeleteBehavior.Cascade);
-
-
-
 
 
 	}
