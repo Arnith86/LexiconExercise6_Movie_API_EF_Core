@@ -136,6 +136,56 @@ public class MoviesController : ControllerBase
 	}
 
 
+	// POST: api/Movies
+	/// <summary>
+	/// Creates a new movie with basic information such as title, year, duration, and genre.
+	/// </summary>
+	/// <param name="genreId">The ID of the genre to associate with the new movie. Must refer to an existing genre.</param>
+	/// <param name="movieCreateDto">The data used to create the movie.</param>
+	/// <returns>The created movie's basic information including the associated genre ID.</returns>
+	/// <response code="201">Returns the created movie with genre ID.</response>
+	/// <response code="400">Returned if the specified genre does not exist or the request is invalid.</response>
+	[HttpPost]
+	[SwaggerOperation(
+		Summary = "Create a new movie.",
+		Description = "Adds a new movie to the database using basic details like title, year, " +
+		"and duration. Requires a valid genre ID to associate the movie with."
+	)]
+	[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieWithGenreIdDto))]
+	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+	[HttpPost]
+	public async Task<ActionResult<MovieWithGenreIdDto>> PostMovie(MovieCreateDto movieCreateDto)
+	{
+
+		var genre = await _context.MovieGenres.FirstOrDefaultAsync(g => g.Id == movieCreateDto.MovieGenreId);
+
+		// Todo: will this send readable error to user?
+		if (genre is null) return BadRequest($"No genre with ID {movieCreateDto.MovieGenreId} was found.");
+
+		// use automapper
+		Movie movie = new Movie() 
+		{
+			Title = movieCreateDto.Title,
+			Year = movieCreateDto.Year,
+			Duration = movieCreateDto.Duration,
+			MovieGenreId = movieCreateDto.MovieGenreId
+		};
+
+		_context.Movies.Add(movie);
+		await _context.SaveChangesAsync();
+
+		// use automapper
+		MovieWithGenreIdDto movieWithGenreDto = new MovieWithGenreIdDto()
+		{
+			Id = movie.Id,
+			Title = movie.Title,
+			Year = movie.Year,
+			Duration = movie.Duration,
+			MovieGenreId = movie.MovieGenreId
+		};
+
+		return CreatedAtAction("GetMovie", new { id = movie.Id }, movieWithGenreDto);
+	}
 
 	// PUT: api/Movies/5
 	[HttpPut("{id}")]
@@ -167,16 +217,6 @@ public class MoviesController : ControllerBase
 		return NoContent();
 	}
 
-	// POST: api/Movies
-	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-	[HttpPost]
-	public async Task<ActionResult<Movie>> PostMovie(Movie movie)
-	{
-		_context.Movies.Add(movie);
-		await _context.SaveChangesAsync();
-
-		return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
-	}
 
 	// DELETE: api/Movies/5
 	[HttpDelete("{id}")]
