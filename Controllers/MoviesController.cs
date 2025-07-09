@@ -87,7 +87,18 @@ public class MoviesController : ControllerBase
 			})
 			.FirstOrDefaultAsync(mwg => mwg.Id == id);
 
-		if (movieWithGenreDto is null) return NotFound();
+		if (movieWithGenreDto is null)
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status404NotFound,
+				Title = "Invalid MovieGenre ID",
+				Detail = $"No movie with ID {id} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return NotFound(problemDetails);
+		}
 
 		return Ok(movieWithGenreDto);
 	}
@@ -130,7 +141,18 @@ public class MoviesController : ControllerBase
 			})
 			.FirstOrDefaultAsync(mbwgdto => mbwgdto.Id == id);
 
-		if (movieWithGenreDetailsDto is null) return NotFound();
+		if (movieWithGenreDetailsDto is null)
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status404NotFound,
+				Title = "Invalid MovieGenre ID",
+				Detail = $"No movie with ID {id} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return NotFound(problemDetails);
+		}
 
 		return Ok(movieWithGenreDetailsDto);
 	}
@@ -159,7 +181,18 @@ public class MoviesController : ControllerBase
 
 		var genre = await _context.MovieGenres.FirstOrDefaultAsync(g => g.Id == movieCreateDto.MovieGenreId);
 
-		if (genre is null) return BadRequest($"No genre with ID {movieCreateDto.MovieGenreId} was found.");
+		if (genre is null)
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status400BadRequest,
+				Title = "Invalid MovieGenre ID",
+				Detail = $"No genre with ID {movieCreateDto.MovieGenreId} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return BadRequest(problemDetails);
+		}
 
 		// use automapper
 		Movie movie = new Movie() 
@@ -210,7 +243,17 @@ public class MoviesController : ControllerBase
 			.FirstOrDefaultAsync(m => m.Id == id);
 		
 		if (movie is null) 
-			return NotFound($"No movie with id {id} was found.");
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status404NotFound,
+				Title = "Invalid MovieGenre ID",
+				Detail = $"No movie with ID {id} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return NotFound(problemDetails);
+		}
 
 		var genre = await _context.MovieGenres
 			.FirstOrDefaultAsync(g => g.Id == movieWithGenreIdUpdateDto.MovieGenreId);
@@ -220,7 +263,7 @@ public class MoviesController : ControllerBase
 			var problemDetails = new ProblemDetails
 			{
 				Status = StatusCodes.Status400BadRequest,
-				Title = "Invalid genre ID",
+				Title = "Invalid MovieGenre ID",
 				Detail = $"No genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
 				Instance = HttpContext.Request.Path
 			};
