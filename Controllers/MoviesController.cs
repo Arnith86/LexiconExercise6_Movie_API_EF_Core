@@ -38,6 +38,7 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieBaseWithGenreDto>))]
 	public async Task<ActionResult<IEnumerable<MovieBaseWithGenreDto>>> GetMovies()
 	{
+		// Todo: use automapper
 		List<MovieBaseWithGenreDto> movieBaseWithGenreDtos = await _context.Movies.
 			Include(mg => mg.MoviesGenre)
 			.Select(mbwgdto => new MovieBaseWithGenreDto
@@ -54,17 +55,41 @@ public class MoviesController : ControllerBase
 	}
 
 	// GET: api/Movies/5
+	/// <summary>
+	/// Retrieves a simplified representation of a specific movie by its ID.
+	/// </summary>
+	/// <param name="id">The unique identifier of the movie.</param>
+	/// <remarks>
+	/// Returns basic movie details including:
+	/// Id, Title, Genre (as a string), Duration, Release Year
+	/// </remarks>
+	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
+	/// <response code="200">Returns the requested movie.</response>
+	/// <response code="404">If no movie with the specified ID exists.</response>
 	[HttpGet("{id}")]
-	public async Task<ActionResult<Movie>> GetMovie(int id)
+	[SwaggerOperation(
+		Summary = "Get a specific movie by ID",
+		Description = "Returns simplified movie details for the movie with the given ID, including genre info.")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieBaseWithGenreDto))]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<ActionResult<MovieBaseWithGenreDto>> GetMovie(int id)
 	{
-		var movie = await _context.Movies.FindAsync(id);
+		// Todo: use automapper
+		var movieBaseWithGenreDto = await _context.Movies
+			.Include(mbwgdto => mbwgdto.MoviesGenre)
+			.Select(mbwgdto => new MovieBaseWithGenreDto
+			{
+				Id = mbwgdto.Id,
+				Duration = mbwgdto.Duration,
+				Year = mbwgdto.Year,
+				Title = mbwgdto.Title,
+				Genre = mbwgdto.MoviesGenre!.Genre
+			})
+			.FirstOrDefaultAsync(mbwgdto => mbwgdto.Id == id);
 
-		if (movie == null)
-		{
-			return NotFound();
-		}
+		if (movieBaseWithGenreDto is null) return NotFound();
 
-		return movie;
+		return Ok(movieBaseWithGenreDto);
 	}
 
 	// PUT: api/Movies/5
