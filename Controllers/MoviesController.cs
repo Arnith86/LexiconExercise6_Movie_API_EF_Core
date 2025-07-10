@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
+using MovieApi.Models.DTOs.ActorDTOs;
 using MovieApi.Models.DTOs.MovieDtos;
+using MovieApi.Models.DTOs.ReviewDTOs;
 using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -111,7 +113,7 @@ public class MoviesController : ControllerBase
 	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
 	/// <response code="200">Returns the requested movie.</response>
 	/// <response code="404">If no movie with the specified ID exists.</response>
-	[HttpGet("{id}/details")]
+	[HttpGet("{id}/descriptive")]
 	[SwaggerOperation(
 		Summary = "Get a specific movie by ID",
 		Description = "Returns movie details for the movie with the given ID, including genre info and details.")]
@@ -147,6 +149,75 @@ public class MoviesController : ControllerBase
 		}
 
 		return Ok(movieWithGenreDetailsDto);
+	}
+
+
+	// GET: api/Movies/5/details
+	/// <summary>
+	/// Retrieves detailed information about a specific movie, including its genre, synopsis, budget, language, reviews, and associated actors.
+	/// </summary>
+	/// <param name="id">The ID of the movie to retrieve details for.</param>
+	/// <returns>
+	/// Returns a <see cref="MovieDetailDto"/> containing detailed information about the specified movie,
+	/// or a <see cref="ProblemDetails"/> object if the movie is not found.
+	/// </returns>
+	/// <response code="200">Returns the full movie details.</response>
+	/// <response code="404">No movie with the specified ID was found.</response>
+	[HttpGet("{id}/details")]
+	[ProducesResponseType(typeof(MovieDetailDto), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+	[SwaggerOperation(
+		Summary = "Get full movie details",
+		Description = "Retrieves a movie by ID, including its genre, synopsis, budget, language, reviews, and actors."
+	)]
+	public async Task<ActionResult<MovieDetailDto>> GetMovieFullDetails(int id)
+	{
+		var movieExists = await _context.Movies.AnyAsync(m => m.Id == id);
+
+		if (!movieExists)
+		{
+			return Problem(
+				statusCode: StatusCodes.Status404NotFound,
+				title: "Invalid movie ID",
+				detail: $"No movie with ID {id} was found.",
+				instance: HttpContext.Request.Path
+			);
+		}
+
+		var movieFullDetailsDto = await _context.Movies
+			.Include(r => r.Reviews)
+			.Include(md => md.MoviesDetails)
+			.Include(mg => mg.MoviesGenre)
+			.Include(a => a.Actors)
+			.Select(mfd => new MovieDetailDto
+			{
+				Id = mfd.Id,
+				Genre = mfd.MoviesGenre!.Genre,
+				Title = mfd.Title,
+				Year = mfd.Year,
+				Duration = mfd.Duration,
+				Synopsis = mfd.MoviesDetails!.Synopsis,
+				Language = mfd.MoviesDetails!.Language,
+				Budget = mfd.MoviesDetails!.Budget,
+				Reviews = mfd.Reviews.Where(r => r.MovieId == id)
+					.Select(r => new ReviewDto
+					{
+						Id = r.Id,
+						ReviewerName = r.ReviewerName,
+						Comment = r.Comment,
+						Rating = r.Rating
+					}).ToList(),
+				Actors = mfd.Actors
+					.Select(a => new ActorDto
+					{ 
+						Id = a.Id,
+						Name = a.Name,
+						BirthYear = a.BirthYear
+					}).ToList()
+
+			}).FirstOrDefaultAsync(mfd => mfd.Id == id);
+
+		return Ok(movieFullDetailsDto);
 	}
 
 

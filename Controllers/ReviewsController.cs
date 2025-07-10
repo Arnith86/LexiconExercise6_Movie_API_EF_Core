@@ -49,7 +49,6 @@ namespace MovieApi.Controllers
 
 			// ToDo: use automapper
 			IEnumerable<ReviewDto> movieReview = await _context.Reviews
-				//.Include(m => m.Movie)
 				.Where(r => r.MovieId == movieId)
 				.Select(r => new ReviewDto
 				{
