@@ -87,15 +87,12 @@ public class MoviesController : ControllerBase
 
 		if (movieWithGenreDto is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid MovieGenre ID",
-				Detail = $"No movie with ID {id} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return NotFound(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status404NotFound,
+				title: "Invalid movie genre ID",
+				detail: $"No movie genre with ID {id} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 		return Ok(movieWithGenreDto);
@@ -141,15 +138,12 @@ public class MoviesController : ControllerBase
 
 		if (movieWithGenreDetailsDto is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid MovieGenre ID",
-				Detail = $"No movie with ID {id} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return NotFound(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status404NotFound,
+				title: "Invalid movie genre ID",
+				detail: $"No movie genre with ID {id} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 		return Ok(movieWithGenreDetailsDto);
@@ -181,15 +175,12 @@ public class MoviesController : ControllerBase
 
 		if (genre is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status400BadRequest,
-				Title = "Invalid MovieGenre ID",
-				Detail = $"No genre with ID {movieCreateDto.MovieGenreId} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return BadRequest(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status400BadRequest,
+				title: "Invalid movie genre ID",
+				detail: $"No movie genre with ID {movieCreateDto.MovieGenreId} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 		// use automapper
@@ -242,15 +233,12 @@ public class MoviesController : ControllerBase
 
 		if (movie is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid movieID",
-				Detail = $"No movie with ID {id} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return NotFound(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status404NotFound,
+				title: "Invalid movie ID",
+				detail: $"No movie with ID {id} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 		var genre = await _context.MovieGenres
@@ -258,15 +246,12 @@ public class MoviesController : ControllerBase
 
 		if (genre is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status400BadRequest,
-				Title = "Invalid MovieGenre ID",
-				Detail = $"No genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return BadRequest(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status400BadRequest,
+				title: "Invalid movie genre ID",
+				detail: $"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 
@@ -319,15 +304,12 @@ public class MoviesController : ControllerBase
 
 		if (movie is null)
 		{
-			var problemDetails = new ProblemDetails
-			{
-				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid movie ID",
-				Detail = $"No movie with ID {id} was found.",
-				Instance = HttpContext.Request.Path
-			};
-
-			return NotFound(problemDetails);
+			return Problem(
+				statusCode: StatusCodes.Status404NotFound,
+				title: "Invalid movie genre ID",
+				detail: $"No movie genre with ID {id} was found.",
+				instance: HttpContext.Request.Path
+			);
 		}
 
 		_context.Movies.Remove(movie);

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
-using MovieApi.Models.DTOs.ActorDTOs;
-using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
@@ -99,13 +97,13 @@ namespace MovieApi.Controllers
 		[HttpPost("{actorId}")]
 		[SwaggerOperation(
 			Summary = "Associate an actor with a movie.",
-			Description =	"Links an existing actor to an existing movie. Both must exist, " +
+			Description = "Links an existing actor to an existing movie. Both must exist, " +
 							"and the association is saved in the database."
 		)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
 		public async Task<IActionResult> PostLinkActorToMovie(
-			[FromRoute] int movieId, 
+			[FromRoute] int movieId,
 			[FromRoute] int actorId)
 		{
 
@@ -114,15 +112,12 @@ namespace MovieApi.Controllers
 
 			if (actor is null)
 			{
-				var problemDetails = new ProblemDetails
-				{
-					Status = StatusCodes.Status404NotFound,
-					Title = "Invalid actor ID",
-					Detail = $"No actor with ID {actorId} was found.",
-					Instance = HttpContext.Request.Path
-				};
-
-				return NotFound(problemDetails);
+				return Problem(
+					statusCode: StatusCodes.Status404NotFound,
+					title: "Invalid actor ID",
+					detail: $"No actor with ID {actorId} was found.",
+					instance: HttpContext.Request.Path
+				);
 			}
 
 			var movie = await _context.Movies
@@ -130,15 +125,12 @@ namespace MovieApi.Controllers
 
 			if (movie is null)
 			{
-				var problemDetails = new ProblemDetails
-				{
-					Status = StatusCodes.Status404NotFound,
-					Title = "Invalid movie ID",
-					Detail = $"No movie with ID {movieId} was found.",
-					Instance = HttpContext.Request.Path
-				};
-
-				return NotFound(problemDetails);
+				return Problem(
+					statusCode: StatusCodes.Status404NotFound,
+					title: "Invalid movie ID",
+					detail: $"No movie with ID {movie} was found.",
+					instance: HttpContext.Request.Path
+				);
 			}
 
 			movie.Actors.Add(actor);

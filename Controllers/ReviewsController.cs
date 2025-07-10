@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs.ReviewDTOs;
-using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
@@ -40,25 +39,21 @@ namespace MovieApi.Controllers
 
 			if (movieExists == false)
 			{
-				var problemDetails = new ProblemDetails
-				{
-					Status = StatusCodes.Status404NotFound,
-					Title = "Invalid movie ID",
-					Detail = $"No movie with ID {movieId} was found.",
-					Instance = HttpContext.Request.Path
-				};
-
-				return NotFound(problemDetails);
+				return Problem(
+					statusCode: StatusCodes.Status404NotFound,
+					title: "Invalid movie ID",
+					detail: $"No movie with ID {movieId} was found.",
+					instance: HttpContext.Request.Path
+				);
 			}
 
 			// ToDo: use automapper
 			IEnumerable<ReviewDto> movieReview = await _context.Reviews
-				.Include(m => m.Movie)
+				//.Include(m => m.Movie)
 				.Where(r => r.MovieId == movieId)
 				.Select(r => new ReviewDto
 				{
-					MovieId = r.MovieId,
-					MovieTitle = r.Movie.Title,
+					Id = r.Id,
 					ReviewerName = r.ReviewerName,
 					Comment = r.Comment,
 					Rating = r.Rating
