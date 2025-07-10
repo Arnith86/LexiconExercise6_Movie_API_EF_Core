@@ -10,5 +10,11 @@ public class MapperProfile: Profile
 	{
 		CreateMap<Movie, MovieWithGenreDto>()
 			.ForMember(dest => dest.MovieGenre, opt => opt.MapFrom(src => src.MoviesGenre!.Genre));
+		
+		CreateMap<Movie, MovieWithGenreDetailsDto>()
+			.ForMember(dest => dest.MovieGenre, opt => opt.MapFrom(src => src.MoviesGenre!.Genre))
+			.ForMember(dest => dest.Synopsis, opt => opt.MapFrom(src => src.MoviesDetails!.Synopsis))
+			.ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.MoviesDetails!.Language))
+			.ForMember(dest => dest.Budget, opt => opt.MapFrom(src => src.MoviesDetails!.Budget));
 	}
 }

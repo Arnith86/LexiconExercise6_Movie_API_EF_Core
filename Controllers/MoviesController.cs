@@ -68,23 +68,9 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id)
 	{
-		// Todo: use automapper
-
 		var movieWithGenreDto =
 			await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies.Where(mwg => mwg.Id == id))
 				.FirstOrDefaultAsync();
-
-		//var movieWithGenreDto = await _context.Movies
-		//	.Include(mwg => mwg.MoviesGenre)
-		//	.Select(mwg => new MovieWithGenreDto
-		//	{
-		//		Id = mwg.Id,
-		//		Duration = mwg.Duration,
-		//		Year = mwg.Year,
-		//		Title = mwg.Title,
-		//		MovieGenre = mwg.MoviesGenre!.Genre
-		//	})
-		//	.FirstOrDefaultAsync(mwg => mwg.Id == id);
 
 		if (movieWithGenreDto is null)
 		{
@@ -120,22 +106,9 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id)
 	{
-		// Todo: use automapper
-		var movieWithGenreDetailsDto = await _context.Movies
-			.Include(mwgd => mwgd.MoviesDetails)
-			.Include(mwgd => mwgd.MoviesGenre)
-			.Select(mwgd => new MovieWithGenreDetailsDto
-			{
-				Id = mwgd.Id,
-				Duration = mwgd.Duration,
-				Year = mwgd.Year,
-				Title = mwgd.Title,
-				MovieGenre = mwgd.MoviesGenre!.Genre,
-				Synopsis = mwgd.MoviesDetails!.Synopsis,
-				Language = mwgd.MoviesDetails!.Language,
-				Budget = mwgd.MoviesDetails.Budget
-			})
-			.FirstOrDefaultAsync(mbwgdto => mbwgdto.Id == id);
+		var movieWithGenreDetailsDto =
+			await _mapper.ProjectTo<MovieWithGenreDetailsDto>(_context.Movies.Where(mwgd => mwgd.Id == id))
+			.FirstOrDefaultAsync();
 
 		if (movieWithGenreDetailsDto is null)
 		{
