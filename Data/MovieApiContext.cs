@@ -26,19 +26,7 @@ public class MovieApiContext : DbContext
 		modelBuilder.ApplyConfiguration(new MovieGenreConfigurations());
 		modelBuilder.ApplyConfiguration(new ActorConfigurations());
 		modelBuilder.ApplyConfiguration(new MovieConfigurations());
-
-		//// Defines the composite primary key of MovieGenre -- not used right now 
-		//modelBuilder.Entity<MovieGenre>()
-		//	.HasKey(mg => new { mg.MovieId, mg.Genre });
-
-
-		//// Sets up a 1:N relationship between Movies and MoviesGenre. Can be null.
-		//modelBuilder.Entity<MovieGenre>()
-		//	.HasOne(mg => mg.Movie)
-		//	.WithMany(m => m.MovieGenres)
-		//	.HasForeignKey(mg => mg.MovieId)
-		//	.OnDelete(DeleteBehavior.Cascade);
-
+		modelBuilder.ApplyConfiguration(new MovieActorConfigurations());
 
 	}
 }

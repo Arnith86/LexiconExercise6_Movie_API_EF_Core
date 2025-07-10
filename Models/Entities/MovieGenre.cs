@@ -5,7 +5,6 @@
 /// Represents the link between a movie and one of its genres.
 /// Each combination of MovieId and Genre is unique.
 /// </summary>
-//[Index(nameof(MovieId), nameof(Genre), IsUnique = true)]
 public class MovieGenre
 {
 	public int Id { get; set; }
