@@ -226,29 +226,14 @@ public class MoviesController : ControllerBase
 			);
 		}
 
-		// use automapper
-		Movie movie = new Movie()
-		{
-			Title = movieCreateDto.Title,
-			Year = movieCreateDto.Year,
-			Duration = movieCreateDto.Duration,
-			MovieGenreId = movieCreateDto.MovieGenreId
-		};
+		Movie movie = _mapper.Map<Movie>(movieCreateDto);
 
 		_context.Movies.Add(movie);
 		await _context.SaveChangesAsync();
 
-		// use automapper
-		MovieWithGenreIdDto movieWithGenreDto = new MovieWithGenreIdDto()
-		{
-			Id = movie.Id,
-			Title = movie.Title,
-			Year = movie.Year,
-			Duration = movie.Duration,
-			MovieGenreId = movie.MovieGenreId
-		};
+		MovieWithGenreIdDto movieWithGenreIdDto = _mapper.Map<MovieWithGenreIdDto>(movie);
 
-		return CreatedAtAction("GetMovie", new { id = movie.Id }, movieWithGenreDto);
+		return CreatedAtAction("GetMovie", new { id = movie.Id }, movieWithGenreIdDto);
 	}
 
 	// PUT: api/Movies/5
