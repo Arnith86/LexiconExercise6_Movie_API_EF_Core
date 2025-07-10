@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs.ActorDTOs;
@@ -14,10 +15,12 @@ namespace MovieApi.Controllers;
 public class MoviesController : ControllerBase
 {
 	private readonly MovieApiContext _context;
+	private readonly IMapper _mapper;
 
-	public MoviesController(MovieApiContext context)
+	public MoviesController(MovieApiContext context, IMapper mapper)
 	{
 		_context = context;
+		_mapper = mapper;
 	}
 
 
@@ -39,17 +42,18 @@ public class MoviesController : ControllerBase
 	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies()
 	{
 		// Todo: use automapper
-		List<MovieWithGenreDto> movieWithGenreDtos = await _context.Movies.
-			Include(mg => mg.MoviesGenre)
-			.Select(mwg => new MovieWithGenreDto
-			{
-				Id = mwg.Id,
-				Duration = mwg.Duration,
-				Year = mwg.Year,
-				Title = mwg.Title,
-				Genre = mwg.MoviesGenre!.Genre
-			})
-			.ToListAsync();
+		List<MovieWithGenreDto> movieWithGenreDtos = await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies).ToListAsync();
+			//_context.Movies
+			//.Include(mg => mg.MoviesGenre)
+			//.Select(mwg => new MovieWithGenreDto
+			//{
+			//	Id = mwg.Id,
+			//	Duration = mwg.Duration,
+			//	Year = mwg.Year,
+			//	Title = mwg.Title,
+			//	Genre = mwg.MoviesGenre!.Genre
+			//})
+			//.ToListAsync();
 
 		return Ok(movieWithGenreDtos);
 	}
@@ -83,7 +87,7 @@ public class MoviesController : ControllerBase
 				Duration = mwg.Duration,
 				Year = mwg.Year,
 				Title = mwg.Title,
-				Genre = mwg.MoviesGenre!.Genre
+				MovieGenre = mwg.MoviesGenre!.Genre
 			})
 			.FirstOrDefaultAsync(mwg => mwg.Id == id);
 
@@ -131,7 +135,7 @@ public class MoviesController : ControllerBase
 				Duration = mwgd.Duration,
 				Year = mwgd.Year,
 				Title = mwgd.Title,
-				Genre = mwgd.MoviesGenre!.Genre,
+				MovieGenre = mwgd.MoviesGenre!.Genre,
 				Synopsis = mwgd.MoviesDetails!.Synopsis,
 				Language = mwgd.MoviesDetails!.Language,
 				Budget = mwgd.MoviesDetails.Budget

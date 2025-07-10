@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MovieApi.Data;
+using MovieApi.Data.Configurations;
 using MovieApi.Extensions;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -28,7 +29,11 @@ namespace MovieApi
 				});
 				opt.EnableAnnotations();
             });
-         
+
+            builder.Services.AddAutoMapper(config =>
+                config.AddProfile<MapperProfile>()
+            );
+
             builder.Services.AddControllers();
 
 

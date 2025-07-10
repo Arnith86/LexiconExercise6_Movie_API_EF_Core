@@ -2,6 +2,6 @@
 {
 	public class MovieWithGenreDto : MovieBaseDto
 	{
-		public string Genre { get; set; } = null!;
+		public string MovieGenre { get; set; } = null!;
 	}
 }
