@@ -4,8 +4,6 @@ using MovieApi.Data;
 using MovieApi.Models.DTOs.MovieDtos;
 using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.Swagger;
-using System.ComponentModel;
 
 namespace MovieApi.Controllers;
 
@@ -195,7 +193,7 @@ public class MoviesController : ControllerBase
 		}
 
 		// use automapper
-		Movie movie = new Movie() 
+		Movie movie = new Movie()
 		{
 			Title = movieCreateDto.Title,
 			Year = movieCreateDto.Year,
@@ -241,13 +239,13 @@ public class MoviesController : ControllerBase
 	{
 		var movie = await _context.Movies
 			.FirstOrDefaultAsync(m => m.Id == id);
-		
-		if (movie is null) 
+
+		if (movie is null)
 		{
 			var problemDetails = new ProblemDetails
 			{
 				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid MovieGenre ID",
+				Title = "Invalid movieID",
 				Detail = $"No movie with ID {id} was found.",
 				Instance = HttpContext.Request.Path
 			};
@@ -257,7 +255,7 @@ public class MoviesController : ControllerBase
 
 		var genre = await _context.MovieGenres
 			.FirstOrDefaultAsync(g => g.Id == movieWithGenreIdUpdateDto.MovieGenreId);
-		
+
 		if (genre is null)
 		{
 			var problemDetails = new ProblemDetails
@@ -270,7 +268,7 @@ public class MoviesController : ControllerBase
 
 			return BadRequest(problemDetails);
 		}
-			
+
 
 		// ToDo: use automapper
 		movie.Title = movieWithGenreIdUpdateDto.Title;
@@ -324,14 +322,14 @@ public class MoviesController : ControllerBase
 			var problemDetails = new ProblemDetails
 			{
 				Status = StatusCodes.Status404NotFound,
-				Title = "Invalid MovieGenre ID",
+				Title = "Invalid movie ID",
 				Detail = $"No movie with ID {id} was found.",
 				Instance = HttpContext.Request.Path
 			};
 
 			return NotFound(problemDetails);
 		}
-		
+
 		_context.Movies.Remove(movie);
 		await _context.SaveChangesAsync();
 
