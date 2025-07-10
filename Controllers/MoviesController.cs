@@ -41,20 +41,10 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieWithGenreDto>))]
 	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies()
 	{
-		// Todo: use automapper
-		List<MovieWithGenreDto> movieWithGenreDtos = await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies).ToListAsync();
-			//_context.Movies
-			//.Include(mg => mg.MoviesGenre)
-			//.Select(mwg => new MovieWithGenreDto
-			//{
-			//	Id = mwg.Id,
-			//	Duration = mwg.Duration,
-			//	Year = mwg.Year,
-			//	Title = mwg.Title,
-			//	Genre = mwg.MoviesGenre!.Genre
-			//})
-			//.ToListAsync();
-
+		List<MovieWithGenreDto> movieWithGenreDtos = 
+			await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies)
+			.ToListAsync();
+		
 		return Ok(movieWithGenreDtos);
 	}
 
@@ -79,17 +69,22 @@ public class MoviesController : ControllerBase
 	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id)
 	{
 		// Todo: use automapper
-		var movieWithGenreDto = await _context.Movies
-			.Include(mwg => mwg.MoviesGenre)
-			.Select(mwg => new MovieWithGenreDto
-			{
-				Id = mwg.Id,
-				Duration = mwg.Duration,
-				Year = mwg.Year,
-				Title = mwg.Title,
-				MovieGenre = mwg.MoviesGenre!.Genre
-			})
-			.FirstOrDefaultAsync(mwg => mwg.Id == id);
+
+		var movieWithGenreDto =
+			await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies.Where(mwg => mwg.Id == id))
+				.FirstOrDefaultAsync();
+
+		//var movieWithGenreDto = await _context.Movies
+		//	.Include(mwg => mwg.MoviesGenre)
+		//	.Select(mwg => new MovieWithGenreDto
+		//	{
+		//		Id = mwg.Id,
+		//		Duration = mwg.Duration,
+		//		Year = mwg.Year,
+		//		Title = mwg.Title,
+		//		MovieGenre = mwg.MoviesGenre!.Genre
+		//	})
+		//	.FirstOrDefaultAsync(mwg => mwg.Id == id);
 
 		if (movieWithGenreDto is null)
 		{
