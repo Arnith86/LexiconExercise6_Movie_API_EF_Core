@@ -282,14 +282,8 @@ public class MoviesController : ControllerBase
 			);
 		}
 
-
-		// ToDo: use automapper
-		movie.Title = movieWithGenreIdUpdateDto.Title;
-		movie.Year = movieWithGenreIdUpdateDto.Year;
-		movie.Duration = movieWithGenreIdUpdateDto.Duration;
-		movie.MovieGenreId = movieWithGenreIdUpdateDto.MovieGenreId;
-
-
+		_mapper.Map(movieWithGenreIdUpdateDto, movie);  
+	
 		try
 		{
 			await _context.SaveChangesAsync();

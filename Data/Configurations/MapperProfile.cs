@@ -21,5 +21,7 @@ public class MapperProfile: Profile
 
 		CreateMap<Movie, MovieWithGenreIdDto>();
 
+		CreateMap<MovieWithGenreIdUpdateDto, Movie>();
+
 	}
 }
