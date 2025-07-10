@@ -4,9 +4,6 @@ namespace MovieApi.Models.DTOs.MovieDtos;
 
 public class MovieWithGenreIdUpdateDto
 {
-	[Required]
-	public int Id { get; set; }
-
 	[MaxLength(100)]
 	[Required(ErrorMessage = "The movie must have a name.")]
 	public string Title { get; set; } = null!;
