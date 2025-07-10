@@ -1,24 +1,25 @@
 ﻿using Bogus;
-using Bogus.DataSets;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Models.Entities;
-using System;
-using System.Collections.ObjectModel;
 
 namespace MovieApi.Data;
 
+/// <summary>
+/// Responsible for seeding the database with sample data using the Bogus library.
+/// Populates tables such as Movies, Actors, MovieGenres, MovieDetails, and Reviews.
+/// This is intended for development or testing and runs only if the database is empty.
+/// </summary>
 internal class DataSeeder
 {
 	private static Faker faker = new Faker("sv");
 	private static List<string> _languages = new List<string> { "English", "Swedish", "French", "Spanish", "German" };
-	
+
 	private static MovieApiContext _context;
 
 	internal static async Task InitAsync(MovieApiContext context)
 	{
 		_context = context;
-		
+
 		if (await context.Movies.AnyAsync()) return;
 
 		int nrOfActiveActors = faker.Random.Int(0, 100);
@@ -28,15 +29,15 @@ internal class DataSeeder
 		await context.Actors.AddRangeAsync(actors);
 
 		IList<MovieGenre> movieGenre = GenerateMovieGenre();
-		
+
 		var movies = await GenerateMoviesAsync(50, movieGenre, actors);
 		await context.SaveChangesAsync();
-		
+
 
 		// Generate and link entities with relations
 		AssignActorsToMovie(actors, movies, nrOfActiveActors);
 		var movieDetails = await GenerateMoviesDetailsAsync(movies);
-		
+
 		await context.SaveChangesAsync();
 	}
 
@@ -48,7 +49,7 @@ internal class DataSeeder
 		{
 			movie.MoviesDetails = new MovieDetails
 			{
-				Movie = movie,			// Establishes a foreignKey relationship
+				Movie = movie,          // Establishes a foreignKey relationship
 				Synopsis = faker.Lorem.Sentence(30),
 				Language = faker.PickRandom(_languages),
 				Budget = faker.Random.Int(300000, 5000000)
@@ -82,13 +83,13 @@ internal class DataSeeder
 	}
 
 	private static async Task<IEnumerable<Movie>> GenerateMoviesAsync(
-		int numberOfMovies, 
+		int numberOfMovies,
 		IList<MovieGenre> movieGenres,
 		IList<Actor> actors)
 	{
 		Random random = new Random();
 		var movies = new List<Movie>(numberOfMovies);
-		
+
 		for (int i = 0; i < numberOfMovies; i++)
 		{
 			var fMovieTitle = "The " + faker.Company.CompanyName();
@@ -98,7 +99,7 @@ internal class DataSeeder
 			int nrOfReviews = random.Next(0, 4);
 			int whichGenre = random.Next(0, movieGenres.Count - 1);
 			//int whichActor = random.Next(0, nrOfActiveActors - 1);
-			
+
 			var movie = new Movie()
 			{
 				Title = fMovieTitle,
@@ -123,16 +124,16 @@ internal class DataSeeder
 		List<string> genreList = new List<string> { "Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance" };
 		List<MovieGenre> movieGenres = new List<MovieGenre>();
 
-		
-		foreach (string genre in genreList) 
-		{ 
+
+		foreach (string genre in genreList)
+		{
 			MovieGenre movieGenre = new MovieGenre()
 			{
 				Genre = genre
 			};
 
 			_context.MovieGenres.AddAsync(movieGenre);
-			movieGenres.Add(movieGenre);	
+			movieGenres.Add(movieGenre);
 		}
 
 		return movieGenres;
@@ -150,7 +151,7 @@ internal class DataSeeder
 		movies.ToList().ForEach(movie =>
 		{
 			IEnumerable<Actor> selectedActors = faker.PickRandom(actorList, faker.Random.Int(1, 8));
-			
+
 			foreach (var actor in selectedActors)
 			{
 				movie.Actors.Add(actor);
@@ -159,7 +160,7 @@ internal class DataSeeder
 		});
 
 
-		
+
 
 		//return actorsInMovies;
 	}
