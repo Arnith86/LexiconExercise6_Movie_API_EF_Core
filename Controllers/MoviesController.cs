@@ -300,15 +300,38 @@ public class MoviesController : ControllerBase
 
 
 	// DELETE: api/Movies/5
+	/// <summary>
+	/// Deletes a specific movie by its ID.
+	/// </summary>
+	/// <param name="id">The ID of the movie to delete.</param>
+	/// <returns>No content if deletion is successful; otherwise, a 404 error if the movie is not found.</returns>
+	/// <response code="204">Movie was successfully deleted.</response>
+	/// <response code="404">Movie with the specified ID was not found.</response>
 	[HttpDelete("{id}")]
+	[SwaggerOperation(
+	Summary = "Delete a movie by ID.",
+	Description = "Removes a movie from the database using the provided ID. " +
+				  "Returns a 404 Not Found response if the movie does not exist."
+	)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> DeleteMovie(int id)
 	{
-		var movie = await _context.Movies.FindAsync(id);
-		if (movie == null)
-		{
-			return NotFound();
-		}
+		var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
 
+		if (movie is null)
+		{
+			var problemDetails = new ProblemDetails
+			{
+				Status = StatusCodes.Status404NotFound,
+				Title = "Invalid MovieGenre ID",
+				Detail = $"No movie with ID {id} was found.",
+				Instance = HttpContext.Request.Path
+			};
+
+			return NotFound(problemDetails);
+		}
+		
 		_context.Movies.Remove(movie);
 		await _context.SaveChangesAsync();
 
