@@ -5,7 +5,7 @@
 namespace MovieApi.Migrations
 {
     /// <inheritdoc />
-    public partial class TableNameChangedMoviesGenre : Migration
+    public partial class NMRelationEntityMovieActoreCreated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,10 +44,10 @@ namespace MovieApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MovieGenreId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false)
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    MovieGenreId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,24 +61,25 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActorMovie",
+                name: "MovieActor",
                 columns: table => new
                 {
-                    ActorsId = table.Column<int>(type: "int", nullable: false),
-                    MoviesId = table.Column<int>(type: "int", nullable: false)
+                    MovieId = table.Column<int>(type: "int", nullable: false),
+                    ActorId = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActorMovie", x => new { x.ActorsId, x.MoviesId });
+                    table.PrimaryKey("PK_MovieActor", x => new { x.MovieId, x.ActorId });
                     table.ForeignKey(
-                        name: "FK_ActorMovie_Actor_ActorsId",
-                        column: x => x.ActorsId,
+                        name: "FK_MovieActor_Actor_ActorId",
+                        column: x => x.ActorId,
                         principalTable: "Actor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ActorMovie_Movies_MoviesId",
-                        column: x => x.MoviesId,
+                        name: "FK_MovieActor_Movies_MovieId",
+                        column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -91,8 +92,8 @@ namespace MovieApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MovieId = table.Column<int>(type: "int", nullable: false),
-                    Synopsis = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Synopsis = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: true),
+                    Language = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Budget = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -129,9 +130,9 @@ namespace MovieApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActorMovie_MoviesId",
-                table: "ActorMovie",
-                column: "MoviesId");
+                name: "IX_MovieActor_ActorId",
+                table: "MovieActor",
+                column: "ActorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movies_MovieGenreId",
@@ -154,7 +155,7 @@ namespace MovieApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActorMovie");
+                name: "MovieActor");
 
             migrationBuilder.DropTable(
                 name: "MoviesDetail");

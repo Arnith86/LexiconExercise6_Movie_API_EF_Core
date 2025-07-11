@@ -12,17 +12,18 @@ namespace MovieApi.Data.Configurations
 			builder.HasKey(ma => new { ma.MovieId, ma.ActorId });
 
 
-			builder.HasOne<Movie>()
+			builder.HasOne<Movie>(m => m.Movie)
 				.WithMany(m => m.MovieActors)
-				.HasForeignKey(ma => ma.MovieId);
+				.HasForeignKey(ma => ma.MovieId)
+				.IsRequired();
 
-			builder.HasOne<Actor>()
+			builder.HasOne<Actor>(a => a.Actor)
 				.WithMany(a => a.MovieActors)
-				.HasForeignKey(ma => ma.ActorId);
+				.HasForeignKey(ma => ma.ActorId)
+				.IsRequired();
 			
 			builder.Property(ma => ma.Role)
-				.HasMaxLength(100)
-				.IsRequired();
+				.HasMaxLength(30);
 
 
 			builder.ToTable("MovieActor");

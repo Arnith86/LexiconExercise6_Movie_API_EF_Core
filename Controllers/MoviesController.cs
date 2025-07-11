@@ -160,7 +160,7 @@ public class MoviesController : ControllerBase
 			.Include(r => r.Reviews)
 			.Include(md => md.MoviesDetails)
 			.Include(mg => mg.MoviesGenre)
-			.Include(a => a.Actors)
+			.Include(a => a.MovieActors)
 			.Select(mfd => new MovieDetailDto
 			{
 				Id = mfd.Id,
@@ -179,12 +179,12 @@ public class MoviesController : ControllerBase
 						Comment = r.Comment,
 						Rating = r.Rating
 					}).ToList(),
-				Actors = mfd.Actors
+				Actors = mfd.MovieActors
 					.Select(a => new ActorDto
 					{ 
-						Id = a.Id,
-						Name = a.Name,
-						BirthYear = a.BirthYear
+						Id = a.Actor.Id,
+						Name = a.Actor.Name,
+						BirthYear = a.Actor.BirthYear
 					}).ToList()
 
 			}).FirstOrDefaultAsync(mfd => mfd.Id == id);

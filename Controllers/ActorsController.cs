@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
+using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
@@ -102,7 +103,7 @@ namespace MovieApi.Controllers
 		)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-		public async Task<IActionResult> PostLinkActorToMovie(
+		public async Task<IActionResult> PostLinkActorToMovieAsync(
 			[FromRoute] int movieId,
 			[FromRoute] int actorId)
 		{
@@ -133,7 +134,9 @@ namespace MovieApi.Controllers
 				);
 			}
 
-			movie.Actors.Add(actor);
+			//movie.Actors.Add(actor);
+			MovieActor movieActor = new MovieActor() { MovieId = movie.Id, ActorId = actor.Id };
+			movie.MovieActors.Add(movieActor);
 			await _context.SaveChangesAsync();
 
 			return NoContent();

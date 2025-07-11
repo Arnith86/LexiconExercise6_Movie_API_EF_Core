@@ -11,9 +11,13 @@ namespace MovieApi.Data;
 /// </summary>
 internal class DataSeeder
 {
-	private static Faker faker = new Faker("sv");
+	private static Faker _faker = new Faker("sv");
 	private static List<string> _languages = new List<string> { "English", "Swedish", "French", "Spanish", "German" };
-
+	private static List<string> _movieRoles = new List<string>
+	{
+		"Hero",	"Villain", "Sidekick", "Mentor", "Detective", 
+		"Doctor", "Lawyer", "Parent", "Agent", "Soldier"
+	};
 	private static MovieApiContext _context;
 
 	internal static async Task InitAsync(MovieApiContext context)
@@ -22,7 +26,7 @@ internal class DataSeeder
 
 		if (await context.Movies.AnyAsync()) return;
 
-		int nrOfActiveActors = faker.Random.Int(0, 100);
+		int nrOfActiveActors = _faker.Random.Int(0, 100);
 
 		// Generate base entities
 		IList<Actor> actors = GenerateActors(100);
@@ -35,8 +39,10 @@ internal class DataSeeder
 
 
 		// Generate and link entities with relations
-		AssignActorsToMovie(actors, movies, nrOfActiveActors);
+		var movieActors = AssignActorsToMovie(actors, movies, nrOfActiveActors);
+		await context.AddRangeAsync(movieActors);
 		var movieDetails = await GenerateMoviesDetailsAsync(movies);
+
 
 		await context.SaveChangesAsync();
 	}
@@ -50,9 +56,9 @@ internal class DataSeeder
 			movie.MoviesDetails = new MovieDetails
 			{
 				Movie = movie,          // Establishes a foreignKey relationship
-				Synopsis = faker.Lorem.Sentence(30),
-				Language = faker.PickRandom(_languages),
-				Budget = faker.Random.Int(300000, 5000000)
+				Synopsis = _faker.Lorem.Sentence(30),
+				Language = _faker.PickRandom(_languages),
+				Budget = _faker.Random.Int(300000, 5000000)
 			};
 
 			await _context.MovieDetails.AddAsync(movie.MoviesDetails);
@@ -68,8 +74,8 @@ internal class DataSeeder
 
 		for (int i = 0; i < numberOfActors; i++)
 		{
-			var fName = faker.Name.FindName();
-			var fYear = faker.Random.Int(1945, 2020);
+			var fName = _faker.Name.FindName();
+			var fYear = _faker.Random.Int(1945, 2020);
 
 
 			actors.Add(new Actor
@@ -92,14 +98,13 @@ internal class DataSeeder
 
 		for (int i = 0; i < numberOfMovies; i++)
 		{
-			var fMovieTitle = "The " + faker.Company.CompanyName();
-			var fYear = faker.Random.Int(1920, 2030);
-			var fDuration = faker.Random.Int(5, 300);
+			var fMovieTitle = "The " + _faker.Company.CompanyName();
+			var fYear = _faker.Random.Int(1920, 2030);
+			var fDuration = _faker.Random.Int(5, 300);
 
 			int nrOfReviews = random.Next(0, 4);
 			int whichGenre = random.Next(0, movieGenres.Count - 1);
-			//int whichActor = random.Next(0, nrOfActiveActors - 1);
-
+			
 			var movie = new Movie()
 			{
 				Title = fMovieTitle,
@@ -108,9 +113,6 @@ internal class DataSeeder
 				Reviews = GenerateReviews(nrOfReviews),
 				MoviesGenre = movieGenres[whichGenre]
 			};
-
-			//movie.Actors = AssignActorsToMovie(movie, actors[whichActor]);
-
 
 			await _context.Movies.AddAsync(movie);
 			movies.Add(movie);
@@ -140,29 +142,23 @@ internal class DataSeeder
 	}
 
 
-	private static void AssignActorsToMovie(
+	private static IEnumerable<MovieActor> AssignActorsToMovie(
 		IEnumerable<Actor> actors,
 		IEnumerable<Movie> movies,
 		int activeActors)
 	{
-		//var actorsInMovies = new Collection<Actor>();
 		var actorList = actors.Take(activeActors);
 
-		movies.ToList().ForEach(movie =>
-		{
-			IEnumerable<Actor> selectedActors = faker.PickRandom(actorList, faker.Random.Int(1, 8));
-
-			foreach (var actor in selectedActors)
+		return movies.SelectMany(movie => actors
+			// Randomly picks a set of actors, each with 1 in 8 chance of being selected
+			.Where(_ => _faker.Random.Int(1, 8) == 1) 
+			.Select(actor => new MovieActor
 			{
-				movie.Actors.Add(actor);
-				actor.Movies.Add(movie);
-			}
-		});
+				MovieId = movie.Id,
+				ActorId = actor.Id,
+				Role = _movieRoles[_faker.Random.Int(0, _movieRoles.Count - 1)]
+			})).ToList();
 
-
-
-
-		//return actorsInMovies;
 	}
 
 	private static ICollection<Review> GenerateReviews(int nrOfReviews)
@@ -173,9 +169,9 @@ internal class DataSeeder
 		{
 			reviews.Add(new Review
 			{
-				ReviewerName = faker.Name.FindName(),
-				Comment = faker.Lorem.Sentence(10),
-				Rating = faker.Random.Int(1, 5)
+				ReviewerName = _faker.Name.FindName(),
+				Comment = _faker.Lorem.Sentence(10),
+				Rating = _faker.Random.Int(1, 5)
 			});
 		}
 
