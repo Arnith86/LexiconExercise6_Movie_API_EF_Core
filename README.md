@@ -1,5 +1,5 @@
 
-# Lexicon Exercise 6 – Movie API with EF Core
+# Lexicon Exercise 7 – Movie API with EF Core
 
 This repository contains my solution to Lexicon Exercise 6: *Movie API*, which focuses on creating a Web API using Entity Framework Core.
 
