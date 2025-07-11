@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36212.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApi", "MovieApi\MovieApi.csproj", "{B51A0A0B-3D97-41DD-AB9C-E15DCA8CD625}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieCore", "MovieCore\MovieCore.csproj", "{FEC6AFF3-01DB-4D8B-8E7E-3C15586AE348}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieData", "MovieData\MovieData.csproj", "{498DB7E5-3553-4230-BE1B-B93615E08732}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B51A0A0B-3D97-41DD-AB9C-E15DCA8CD625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51A0A0B-3D97-41DD-AB9C-E15DCA8CD625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51A0A0B-3D97-41DD-AB9C-E15DCA8CD625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51A0A0B-3D97-41DD-AB9C-E15DCA8CD625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC6AFF3-01DB-4D8B-8E7E-3C15586AE348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC6AFF3-01DB-4D8B-8E7E-3C15586AE348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC6AFF3-01DB-4D8B-8E7E-3C15586AE348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC6AFF3-01DB-4D8B-8E7E-3C15586AE348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498DB7E5-3553-4230-BE1B-B93615E08732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498DB7E5-3553-4230-BE1B-B93615E08732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498DB7E5-3553-4230-BE1B-B93615E08732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498DB7E5-3553-4230-BE1B-B93615E08732}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7310B60B-6150-461D-9C60-965B534E5322}
+	EndGlobalSection
+EndGlobal
