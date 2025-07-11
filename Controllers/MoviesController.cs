@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
 using MovieApi.Models.DTOs.ActorDTOs;
+using MovieApi.Models.DTOs.MovieActorDto;
 using MovieApi.Models.DTOs.MovieDtos;
 using MovieApi.Models.DTOs.ReviewDTOs;
 using MovieApi.Models.Entities;
@@ -210,7 +211,6 @@ public class MoviesController : ControllerBase
 	)]
 	[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieWithGenreIdDto))]
 	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-	[HttpPost]
 	public async Task<ActionResult<MovieWithGenreIdDto>> PostMovie(MovieCreateDto movieCreateDto)
 	{
 
@@ -236,6 +236,8 @@ public class MoviesController : ControllerBase
 		return CreatedAtAction("GetMovie", new { id = movie.Id }, movieWithGenreIdDto);
 	}
 
+
+	
 	// PUT: api/Movies/5
 	/// <summary>
 	/// Updates an existing movie with new title, year, duration, and genre.

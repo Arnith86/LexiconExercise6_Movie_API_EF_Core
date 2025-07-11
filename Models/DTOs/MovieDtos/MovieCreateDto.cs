@@ -1,9 +1,4 @@
-﻿using MovieApi.Models.DTOs.ActorDTOs;
-using MovieApi.Models.DTOs.MovieDetailsDTOs;
-using MovieApi.Models.DTOs.ReviewDTOs;
-using MovieApi.Models.Entities;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MovieApi.Models.DTOs.MovieDtos;
 
@@ -18,7 +13,7 @@ public class MovieCreateDto
 
 	[Range(5, 300)]
 	public int Duration { get; set; }
-	
+
 	[Required(ErrorMessage = "A movie must have a genre.")]
 	public int MovieGenreId { get; set; }
 }

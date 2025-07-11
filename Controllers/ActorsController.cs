@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Data;
+using MovieApi.Models.DTOs.MovieActorDto;
 using MovieApi.Models.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,156 +13,68 @@ namespace MovieApi.Controllers
 	public class ActorsController : ControllerBase
 	{
 		private readonly MovieApiContext _context;
+		private readonly IMapper _mapper;
 
-		public ActorsController(MovieApiContext context)
+		public ActorsController(MovieApiContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
-		//// GET: api/Actors
-		//[HttpGet]
-		//public async Task<ActionResult<IEnumerable<Actor>>> GetActors()
-		//{
-		//	return await _context.Actors.ToListAsync();
-		//}
 
-		//// GET: api/Actors/5
-		//[HttpGet("{id}")]
-		//public async Task<ActionResult<Actor>> GetActor(int id)
-		//{
-		//	var actor = await _context.Actors.FindAsync(id);
-
-		//	if (actor == null)
-		//	{
-		//		return NotFound();
-		//	}
-
-		//	return actor;
-		//}
-
-		//// PUT: api/Actors/5
-		//// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-		//[HttpPut("{id}")]
-		//public async Task<IActionResult> PutActor(int id, Actor actor)
-		//{
-		//	if (id != actor.Id)
-		//	{
-		//		return BadRequest();
-		//	}
-
-		//	_context.Entry(actor).State = EntityState.Modified;
-
-		//	try
-		//	{
-		//		await _context.SaveChangesAsync();
-		//	}
-		//	catch (DbUpdateConcurrencyException)
-		//	{
-		//		if (!ActorExists(id))
-		//		{
-		//			return NotFound();
-		//		}
-		//		else
-		//		{
-		//			throw;
-		//		}
-		//	}
-
-		//	return NoContent();
-		//}
-
-		//// POST: api/Actors
-		//[HttpPost()]
-		//public async Task<ActionResult<ActorDto>> PostActor(ActorCreateDto actorCreateDto)
-		//{
-		//	Actor actor = new Actor()
-		//	{
-		//		Name = actorCreateDto.Name,
-		//		BirthYear = actorCreateDto.BirthYear,
-		//		Movies = actorCreateDto.Movies as ICollection<Movie>
-		//	};
-
-		//	_context.Actors.Add(actor);
-		//	await _context.SaveChangesAsync();
-
-		//	return CreatedAtAction("GetActor", new { id = actor.Id }, actorCreateDto);
-		//}
-
-		// POST /api/movies/{movieId}/actors/{actorId}
+		// POST /api/movies/5/actors
 		/// <summary>
-		/// Associates an existing actor with an existing movie.
+		/// Associates an existing actor with an existing movie, specifying their role.
 		/// </summary>
-		/// <param name="movieId">The ID of the movie to associate the actor with.</param>
-		/// <param name="actorId">The ID of the actor to associate with the movie.</param>
-		/// <returns>No content on success; NotFound if the actor or movie is not found.</returns>
+		/// <param name="movieId">The ID of the movie to which the actor should be added.</param>
+		/// <param name="movieActorCreateDto">The actor ID and their role in the movie.</param>
+		/// <returns>No content on success; BadRequest if movie or actor ID is invalid.</returns>
 		/// <response code="204">The actor was successfully associated with the movie.</response>
-		/// <response code="404">The movie or actor with the specified ID was not found.</response>
-		[HttpPost("{actorId}")]
+		/// <response code="400">Invalid movie or actor ID was provided.</response>
 		[SwaggerOperation(
-			Summary = "Associate an actor with a movie.",
-			Description = "Links an existing actor to an existing movie. Both must exist, " +
-							"and the association is saved in the database."
+			Summary = "Add an actor to a movie.",
+			Description = "Associates an existing actor with an existing movie by specifying their role. " +
+						  "Requires a valid movie ID and actor ID."
 		)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-		public async Task<IActionResult> PostLinkActorToMovieAsync(
-			[FromRoute] int movieId,
-			[FromRoute] int actorId)
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+		[HttpPost]
+		public async Task<IActionResult> PostLinkMovieAndActor(
+			[FromBody] MovieActorCreateDto movieActorCreateDto,
+			[FromRoute] int movieId)
 		{
 
-			var actor = await _context.Actors
-				.FirstOrDefaultAsync(a => a.Id == actorId);
-
-			if (actor is null)
-			{
-				return Problem(
-					statusCode: StatusCodes.Status404NotFound,
-					title: "Invalid actor ID",
-					detail: $"No actor with ID {actorId} was found.",
-					instance: HttpContext.Request.Path
-				);
-			}
-
-			var movie = await _context.Movies
-				.FirstOrDefaultAsync(m => m.Id == movieId);
+			var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
 
 			if (movie is null)
 			{
 				return Problem(
-					statusCode: StatusCodes.Status404NotFound,
+					statusCode: StatusCodes.Status400BadRequest,
 					title: "Invalid movie ID",
-					detail: $"No movie with ID {movie} was found.",
+					detail: $"No movie with ID {movieId} was found.",
 					instance: HttpContext.Request.Path
 				);
 			}
 
-			//movie.Actors.Add(actor);
-			MovieActor movieActor = new MovieActor() { MovieId = movie.Id, ActorId = actor.Id };
-			movie.MovieActors.Add(movieActor);
+			bool actorExists = await _context.Actors.AnyAsync(a => a.Id == movieActorCreateDto.ActorId);
+
+			if (!actorExists)
+			{
+				return Problem(
+					statusCode: StatusCodes.Status400BadRequest,
+					title: "Invalid actor ID",
+					detail: $"No actor with ID {movieId} was found.",
+					instance: HttpContext.Request.Path
+				);
+			}
+
+			MovieActor movieActor = _mapper.Map<MovieActor>(movieActorCreateDto);
+			
+			movie.MovieActors.Add(_mapper.Map<MovieActor>(movieActorCreateDto));
+			
 			await _context.SaveChangesAsync();
 
 			return NoContent();
-		}
-
-		//// DELETE: api/Actors/5
-		//[HttpDelete("{id}")]
-		//public async Task<IActionResult> DeleteActor(int id)
-		//{
-		//	var actor = await _context.Actors.FindAsync(id);
-		//	if (actor == null)
-		//	{
-		//		return NotFound();
-		//	}
-
-		//	_context.Actors.Remove(actor);
-		//	await _context.SaveChangesAsync();
-
-		//	return NoContent();
-		//}
-
-		private bool ActorExists(int id)
-		{
-			return _context.Actors.Any(e => e.Id == id);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MovieApi.Models.DTOs.MovieActorDto;
 using MovieApi.Models.DTOs.MovieDtos;
 using MovieApi.Models.Entities;
 
@@ -22,6 +23,8 @@ public class MapperProfile: Profile
 		CreateMap<Movie, MovieWithGenreIdDto>();
 
 		CreateMap<MovieWithGenreIdUpdateDto, Movie>();
+
+		CreateMap<MovieActorCreateDto, MovieActor>();	
 
 	}
 }
