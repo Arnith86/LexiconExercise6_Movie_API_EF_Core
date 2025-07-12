@@ -4,7 +4,7 @@
 /// Represents detailed information about a movie.
 /// This entity has a one-to-one relationship with the <see cref="Movie"/> entity.
 /// </summary>
-public class MovieDetails
+public class MovieDetails : EntityBase
 {
 	public int Id { get; set; }
 	public int MovieId { get; set; }

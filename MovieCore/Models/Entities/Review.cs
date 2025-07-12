@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a review for a movie, including reviewer information, comment, and rating.
 /// </summary>
-public class Review
+public class Review : EntityBase
 {
 	public int Id { get; set; }
 	public int MovieId { get; set; }

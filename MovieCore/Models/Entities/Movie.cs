@@ -7,7 +7,7 @@ namespace MovieCore.Models.Entities;
 /// Includes an optional one-to-one relationship with <see cref="MoviesDetails"/> for extended information,
 /// and a one-to-many relationship with <see cref="Review"/> representing user reviews.
 /// </summary>
-public class Movie
+public class Movie : EntityBase
 {
 	public int Id { get; set; }
 	public string Title { get; set; } = null!;
