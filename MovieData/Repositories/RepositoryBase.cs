@@ -5,7 +5,7 @@ using MovieData.Data;
 
 namespace MovieData.Repositories;
 
-internal class RepositoryBase<T> : IRepositoryBase<T> where T : EntityBase
+public class RepositoryBase<T> : IRepositoryBase<T> where T : EntityBase
 {
 	protected DbSet<T> DbSet { get; }
 
