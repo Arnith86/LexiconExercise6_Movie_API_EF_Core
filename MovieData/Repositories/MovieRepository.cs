@@ -1,4 +1,5 @@
-﻿using MovieCore.DomainContracts;
+﻿using Microsoft.EntityFrameworkCore;
+using MovieCore.DomainContracts;
 using MovieCore.Models.Entities;
 using MovieData.Data;
 
@@ -11,18 +12,15 @@ internal class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 	{
 	}
 
-	public Task<bool> AnyAsync(int id)
-	{
-		throw new NotImplementedException();
-	}
+	public async Task<bool> AnyAsync(int id) => await _context.Movies.AnyAsync(m => m.Id.Equals(id));
 
-	public Task<IEnumerable<Movie>> GetAllAsync()
-	{
-		throw new NotImplementedException();
-	}
+	public async Task<IEnumerable<Movie>> GetAllAsync() => await _context.Movies.ToListAsync();
 
-	public Task<Movie> GetAsync(int id)
-	{
-		throw new NotImplementedException();
-	}
+	public async Task<Movie?> GetAsync(int id) => await _context.Movies.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+	public void Add(Movie entity) => _context.Movies.Add(entity);
+
+	public void Remove(Movie entity) => _context.Movies.Remove(entity);
+
+	public void Update(Movie entity) => _context.Movies.Update(entity);
 }

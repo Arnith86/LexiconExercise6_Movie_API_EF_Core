@@ -5,8 +5,9 @@ namespace MovieCore.DomainContracts;
 public interface IReviewRepository : IRepositoryBase<Review>
 {
 	public Task<bool> AnyAsync(int id);
-
 	public Task<IEnumerable<Review>> GetAllAsync();
-
-	public Task<Review> GetAsync(int id);
+	public Task<Review?> GetAsync(int id);
+	void Add(Review entity);
+	void Update(Review entity);
+	void Remove(Review entity);
 }
