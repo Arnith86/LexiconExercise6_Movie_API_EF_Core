@@ -8,6 +8,7 @@ using MovieCore.Models.DTOs.ReviewDTOs;
 using MovieCore.Models.Entities;
 using MovieData.Data;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Threading.Tasks;
 
 namespace MovieApi.Controllers;
 
@@ -289,11 +290,11 @@ public class MoviesController : ControllerBase
 	
 		try
 		{
-			await _context.SaveChangesAsync();
+			await _unitOfWork.CompleteAsync();
 		}
 		catch (DbUpdateConcurrencyException)
 		{
-			if (!MovieExists(id))
+			if (!await _unitOfWork.Movies.AnyAsync(id))
 			{
 				return NotFound();
 			}
@@ -325,7 +326,7 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> DeleteMovie(int id)
 	{
-		var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+		var movie = await _unitOfWork.Movies.GetMovieAsync(id);// _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
 
 		if (movie is null)
 		{
@@ -337,14 +338,9 @@ public class MoviesController : ControllerBase
 			);
 		}
 
-		_context.Movies.Remove(movie);
-		await _context.SaveChangesAsync();
+		_unitOfWork.Movies.Remove(movie);
+		await _unitOfWork.CompleteAsync();
 
 		return NoContent();
-	}
-
-	private bool MovieExists(int id)
-	{
-		return _context.Movies.Any(e => e.Id == id);
 	}
 }
