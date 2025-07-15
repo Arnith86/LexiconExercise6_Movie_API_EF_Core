@@ -232,7 +232,7 @@ public class MoviesController : ControllerBase
 
 		
 		_unitOfWork.Movies.Add(movie);
-		await _unitOfWork.CompleteAsync();// _context.SaveChangesAsync();
+		await _unitOfWork.CompleteAsync();
 
 		MovieWithGenreIdDto movieWithGenreIdDto = _mapper.Map<MovieWithGenreIdDto>(movie);
 
@@ -261,8 +261,7 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> PutMovie(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
 	{
-		var movie = await _context.Movies
-			.FirstOrDefaultAsync(m => m.Id == id);
+		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: true);
 
 		if (movie is null)
 		{
@@ -274,10 +273,9 @@ public class MoviesController : ControllerBase
 			);
 		}
 
-		var genre = await _context.MovieGenres
-			.FirstOrDefaultAsync(g => g.Id == movieWithGenreIdUpdateDto.MovieGenreId);
+		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieWithGenreIdUpdateDto.MovieGenreId);
 
-		if (genre is null)
+		if (!genre)
 		{
 			return Problem(
 				statusCode: StatusCodes.Status400BadRequest,
