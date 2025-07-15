@@ -1,4 +1,5 @@
-﻿using MovieCore.Models.Entities;
+﻿using MovieCore.Models.DTOs.MovieDtos;
+using MovieCore.Models.Entities;
 
 
 namespace MovieCore.DomainContracts;
@@ -15,4 +16,5 @@ public interface IMovieRepository : IRepositoryQueries<Movie>, IRepositoryAction
 	Task<Movie?> GetMovieAsync(int id, bool changeTracker = false);
 	Task<bool> AnyAsync(int id);
 	Task<Movie?> GetMovieDetailsAsync(int id, bool changeTracker = false);
+	Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id, bool changeTracker = false);
 }

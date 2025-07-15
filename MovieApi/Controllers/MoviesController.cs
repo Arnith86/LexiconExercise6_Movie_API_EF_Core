@@ -160,38 +160,7 @@ public class MoviesController : ControllerBase
 			);
 		}
 
-		var movieFullDetailsDto = await _context.Movies
-			.Include(r => r.Reviews)
-			.Include(md => md.MoviesDetails)
-			.Include(mg => mg.MoviesGenre)
-			.Include(a => a.MovieActors)
-			.Select(mfd => new MovieDetailDto
-			{
-				Id = mfd.Id,
-				Genre = mfd.MoviesGenre!.Genre,
-				Title = mfd.Title,
-				Year = mfd.Year,
-				Duration = mfd.Duration,
-				Synopsis = mfd.MoviesDetails!.Synopsis,
-				Language = mfd.MoviesDetails!.Language,
-				Budget = mfd.MoviesDetails!.Budget,
-				Reviews = mfd.Reviews.Where(r => r.MovieId == id)
-					.Select(r => new ReviewDto
-					{
-						Id = r.Id,
-						ReviewerName = r.ReviewerName,
-						Comment = r.Comment,
-						Rating = r.Rating
-					}).ToList(),
-				Actors = mfd.MovieActors
-					.Select(a => new ActorDto
-					{ 
-						Id = a.Actor.Id,
-						Name = a.Actor.Name,
-						BirthYear = a.Actor.BirthYear
-					}).ToList()
-
-			}).FirstOrDefaultAsync(mfd => mfd.Id == id);
+		var movieFullDetailsDto = await _unitOfWork.Movies.GetMovieFullDetailsAsync(id);
 
 		return Ok(movieFullDetailsDto);
 	}
