@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.ActorDTOs;
 using MovieCore.Models.DTOs.MovieDtos;
 using MovieCore.Models.DTOs.ReviewDTOs;
@@ -16,11 +17,13 @@ public class MoviesController : ControllerBase
 {
 	private readonly MovieApiContext _context;
 	private readonly IMapper _mapper;
+	private readonly IUnitOfWork _unitOfWork;
 
-	public MoviesController(MovieApiContext context, IMapper mapper)
+	public MoviesController(MovieApiContext context, IMapper mapper, IUnitOfWork unitOfWork)
 	{
 		_context = context;
 		_mapper = mapper;
+		_unitOfWork = unitOfWork;
 	}
 
 
@@ -41,10 +44,10 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieWithGenreDto>))]
 	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies()
 	{
-		List<MovieWithGenreDto> movieWithGenreDtos = 
-			await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies)
-			.ToListAsync();
-		
+		var movieWithGenreDtos = _mapper.Map<IEnumerable<MovieWithGenreDto>>(
+			await _unitOfWork.Movies.GetAllMoviesAsync(changeTracker: false)
+		);
+
 		return Ok(movieWithGenreDtos);
 	}
 
@@ -68,11 +71,9 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id)
 	{
-		var movieWithGenreDto =
-			await _mapper.ProjectTo<MovieWithGenreDto>(_context.Movies.Where(mwg => mwg.Id == id))
-				.FirstOrDefaultAsync();
+		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: false);
 
-		if (movieWithGenreDto is null)
+		if (movie is null)
 		{
 			return Problem(
 				statusCode: StatusCodes.Status404NotFound,
@@ -81,6 +82,8 @@ public class MoviesController : ControllerBase
 				instance: HttpContext.Request.Path
 			);
 		}
+		
+		var movieWithGenreDto = _mapper.Map<MovieWithGenreDto>(movie);
 
 		return Ok(movieWithGenreDto);
 	}
@@ -106,9 +109,9 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id)
 	{
-		var movieWithGenreDetailsDto =
-			await _mapper.ProjectTo<MovieWithGenreDetailsDto>(_context.Movies.Where(mwgd => mwgd.Id == id))
-			.FirstOrDefaultAsync();
+		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
+			await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
+		);
 
 		if (movieWithGenreDetailsDto is null)
 		{
@@ -144,7 +147,7 @@ public class MoviesController : ControllerBase
 	)]
 	public async Task<ActionResult<MovieDetailDto>> GetMovieFullDetails(int id)
 	{
-		var movieExists = await _context.Movies.AnyAsync(m => m.Id == id);
+		var movieExists = await _unitOfWork.Movies.AnyAsync(id);
 
 		if (!movieExists)
 		{
@@ -213,9 +216,9 @@ public class MoviesController : ControllerBase
 	public async Task<ActionResult<MovieWithGenreIdDto>> PostMovie(MovieCreateDto movieCreateDto)
 	{
 
-		var genre = await _context.MovieGenres.FirstOrDefaultAsync(g => g.Id == movieCreateDto.MovieGenreId);
+		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
 
-		if (genre is null)
+		if (!genre)
 		{
 			return Problem(
 				statusCode: StatusCodes.Status400BadRequest,
@@ -227,8 +230,9 @@ public class MoviesController : ControllerBase
 
 		Movie movie = _mapper.Map<Movie>(movieCreateDto);
 
-		_context.Movies.Add(movie);
-		await _context.SaveChangesAsync();
+		
+		_unitOfWork.Movies.Add(movie);
+		await _unitOfWork.CompleteAsync();// _context.SaveChangesAsync();
 
 		MovieWithGenreIdDto movieWithGenreIdDto = _mapper.Map<MovieWithGenreIdDto>(movie);
 

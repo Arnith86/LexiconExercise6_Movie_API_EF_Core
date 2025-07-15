@@ -1,4 +1,5 @@
 ﻿using MovieCore.DomainContracts;
+using MovieCore.Models.Entities;
 using MovieData.Data;
 
 namespace MovieData.Repositories
@@ -11,22 +12,26 @@ namespace MovieData.Repositories
 	{
 		private readonly MovieApiContext _context;
 		private readonly Lazy<IMovieRepository> _movieRepository;
-		private readonly Lazy<IReviewRepository> _reviewRepository;
-		private readonly Lazy<IActorRepository> _actorRepository;
+		private readonly Lazy<IMovieGenreRepository> _movieGenreRepository;
+		//private readonly Lazy<IReviewRepository> _reviewRepository;
+		//private readonly Lazy<IActorRepository> _actorRepository;
 		
 		/// <inheritdoc/>
 		public IMovieRepository Movies => _movieRepository.Value;
 		/// <inheritdoc/>
-		public IReviewRepository Reviews => _reviewRepository.Value;
-		/// <inheritdoc/>
-		public IActorRepository Actors => _actorRepository.Value;
+		public IMovieGenreRepository MovieGenres => _movieGenreRepository.Value;
+		///// <inheritdoc/>
+		//public IReviewRepository Reviews => _reviewRepository.Value;
+		///// <inheritdoc/>
+		//public IActorRepository Actors => _actorRepository.Value;
 
 		public UnitOfWork(MovieApiContext context)
 		{
 			_context = context;
 			_movieRepository = new Lazy<IMovieRepository>(() => new MovieRepository(_context));
-			_reviewRepository = new Lazy<IReviewRepository>(() => new ReviewRepository(_context)); // Needed? 
-			_actorRepository = new Lazy<IActorRepository>(() => new ActorRepository(_context)); // Needed?
+			_movieGenreRepository = new Lazy<IMovieGenreRepository>(() => new MovieGenreRepository(_context));
+			//_reviewRepository = new Lazy<IReviewRepository>(() => new ReviewRepository(_context)); // Needed? 
+			//_actorRepository = new Lazy<IActorRepository>(() => new ActorRepository(_context)); // Needed?
 		}
 
 		/// <inheritdoc/>

@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MovieCore.DomainContracts;
 using MovieData.Data;
 using MovieData.Data.Configurations;
 using MovieData.Extensions;
+using MovieData.Repositories;
 
 namespace MovieApi
 {
@@ -33,6 +35,9 @@ namespace MovieApi
 
 			builder.Services.AddControllers();
 
+			// "AddScoped" is chosen, because context is scoped. As such the lifetime of the service needs
+			// to match. 
+			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			//builder.Services.AddOpenApi();

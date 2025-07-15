@@ -1,4 +1,6 @@
-﻿namespace MovieCore.DomainContracts;
+﻿using MovieCore.Models.Entities;
+
+namespace MovieCore.DomainContracts;
 
 /// <summary>
 /// Defines a unit of work that encapsulates access to multiple repositories
@@ -12,18 +14,23 @@ public interface IUnitOfWork
 	IMovieRepository Movies { get; }
 
 	/// <summary>
-	/// Gets the repository for handling <see cref="Entities.Review"/> entities.
+	/// Gets the repository for handling <see cref="Entities.Movie"/> entities.
 	/// </summary>
-	IReviewRepository Reviews { get; }
+	IMovieGenreRepository MovieGenres { get; }
 
-	/// <summary>
-	/// Gets the repository for handling <see cref="Entities.Actor"/> entities.
-	/// </summary>
-	IActorRepository Actors { get; }
+		///// <summary>
+		///// Gets the repository for handling <see cref="Entities.Review"/> entities.
+		///// </summary>
+		//IReviewRepository Reviews { get; }
 
-	/// <summary>
-	/// Persists all changes made through the repositories in a single transaction.
-	/// </summary>
-	/// <returns>A task representing the asynchronous save operation.</returns>
-	Task CompleteAsync();
+		///// <summary>
+		///// Gets the repository for handling <see cref="Entities.Actor"/> entities.
+		///// </summary>
+		//IActorRepository Actors { get; }
+
+		/// <summary>
+		/// Persists all changes made through the repositories in a single transaction.
+		/// </summary>
+		/// <returns>A task representing the asynchronous save operation.</returns>
+		Task CompleteAsync();
 }

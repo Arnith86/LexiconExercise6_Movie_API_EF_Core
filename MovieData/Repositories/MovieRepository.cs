@@ -12,15 +12,29 @@ internal class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 	{
 	}
 
-	public async Task<bool> AnyAsync(int id) => await _context.Movies.AnyAsync(m => m.Id.Equals(id));
+	public async Task<bool> AnyAsync(int id) => await FindAnyAsync(m => m.Id.Equals(id));
 
-	public async Task<IEnumerable<Movie>> GetAllAsync() => await _context.Movies.ToListAsync();
+	public async Task<List<Movie>> GetAllMoviesAsync(bool changeTracker = false) => 
+		await GetAll(changeTracker).Include(m => m.MoviesGenre).ToListAsync();
 
-	public async Task<Movie?> GetAsync(int id) => await _context.Movies.FirstOrDefaultAsync(m => m.Id.Equals(id));
+	public async Task<Movie?> GetMovieAsync(int id, bool changeTracker = false) =>	
+		await GetByCondition(m => m.Id.Equals(id), changeTracker)
+				.Include(m => m.MoviesGenre)
+				.FirstOrDefaultAsync();
 
-	public void Add(Movie entity) => _context.Movies.Add(entity);
+	public async Task<Movie?> GetMovieDetailsAsync(int id, bool changeTracker = false) =>
+		await GetByCondition(gmd => gmd.Id.Equals(id))
+				.Include(md => md.MoviesDetails)
+				.Include(mg => mg.MoviesGenre)
+				.FirstOrDefaultAsync();
 
-	public void Remove(Movie entity) => _context.Movies.Remove(entity);
+	//public async Task<Movie?> GetMovieFullDetailsAsync(int movieId, bool changeTracker = false) => // FINISH THIS 
+	//	await GetByCondition()
+	//		.Include(r => r.Reviews)
+	//		.Include(md => md.MoviesDetails)
+	//		.Include(mg => mg.MoviesGenre)
+	//		.Include(a => a.MovieActors)
+	//		.FirstOrDefaultAsync();
 
-	public void Update(Movie entity) => _context.Movies.Update(entity);
+	
 }
