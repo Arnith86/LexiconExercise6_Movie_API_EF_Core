@@ -8,7 +8,11 @@ using MovieData.Data;
 
 namespace MovieData.Repositories;
 
-internal class MovieRepository : RepositoryBase<Movie>, IMovieRepository
+/// <summary>
+/// Repository implementation for accessing and managing <see cref="Movie"/> entities.
+/// Inherits common CRUD and query functionality from <see cref="RepositoryBase{T}"/>.
+/// </summary>
+public class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 {
 
 	public MovieRepository(MovieApiContext context) : base(context)

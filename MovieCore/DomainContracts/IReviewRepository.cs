@@ -1,13 +1,13 @@
-﻿using MovieCore.Models.Entities;
+﻿using MovieCore.Models.DTOs.ReviewDTOs;
+using MovieCore.Models.Entities;
 
 namespace MovieCore.DomainContracts;
 
-public interface IReviewRepository : IRepositoryBase<Review>
+/// <summary>
+/// Defines data access operations specific to <see cref="Review"/> entities.
+/// Inherits basic query capabilities from <see cref="IRepositoryQueries{Review}"/>.
+/// </summary>
+public interface IReviewRepository : IRepositoryQueries<Review>
 {
-	public Task<bool> AnyAsync(int id);
-	public Task<IEnumerable<Review>> GetAllAsync();
-	public Task<Review?> GetAsync(int id);
-	void Add(Review entity);
-	void Update(Review entity);
-	void Remove(Review entity);
+	Task<List<ReviewDto>> GetAllReviewsForMovieAsync(int movieId, bool changeTracker = false);
 }

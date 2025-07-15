@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MovieCore.DomainContracts;
+﻿using MovieCore.DomainContracts;
 using MovieCore.Models.Entities;
 using MovieData.Data;
 
 namespace MovieData.Repositories;
 
+/// <summary>
+/// Repository implementation for accessing and managing <see cref="Actor"/> entities.
+/// Inherits common CRUD and query functionality from <see cref="RepositoryBase{T}"/>.
+/// </summary>
 public class ActorRepository : RepositoryBase<Actor>, IActorRepository
 {
 	public ActorRepository(MovieApiContext context) : base(context)

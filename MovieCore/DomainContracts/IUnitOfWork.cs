@@ -1,6 +1,4 @@
-﻿using MovieCore.Models.Entities;
-
-namespace MovieCore.DomainContracts;
+﻿namespace MovieCore.DomainContracts;
 
 /// <summary>
 /// Defines a unit of work that encapsulates access to multiple repositories
@@ -18,10 +16,10 @@ public interface IUnitOfWork
 	/// </summary>
 	IMovieGenreRepository MovieGenres { get; }
 
-	///// <summary>
-	///// Gets the repository for handling <see cref="Entities.Review"/> entities.
-	///// </summary>
-	//IReviewRepository Reviews { get; }
+	/// <summary>
+	/// Gets the repository for handling <see cref="Entities.Review"/> entities.
+	/// </summary>
+	IReviewRepository Reviews { get; }
 
 	/// <summary>
 	/// Gets the repository for handling <see cref="Entities.Actor"/> entities.

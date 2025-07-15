@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.ReviewDTOs;
 using MovieData.Data;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,10 +11,12 @@ namespace MovieApi.Controllers
 	public class ReviewsController : ControllerBase
 	{
 		private readonly MovieApiContext _context;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public ReviewsController(MovieApiContext context)
+		public ReviewsController(MovieApiContext context, IUnitOfWork unitOfWork)
 		{
 			_context = context;
+			_unitOfWork = unitOfWork;
 		}
 
 		// GET: api/movie/5/reviews
@@ -35,7 +37,7 @@ namespace MovieApi.Controllers
 		)]
 		public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews(int movieId)
 		{
-			var movieExists = await _context.Movies.AnyAsync(m => m.Id == movieId);
+			var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
 
 			if (movieExists == false)
 			{
@@ -47,16 +49,7 @@ namespace MovieApi.Controllers
 				);
 			}
 
-			// ToDo: use automapper
-			IEnumerable<ReviewDto> movieReview = await _context.Reviews
-				.Where(r => r.MovieId == movieId)
-				.Select(r => new ReviewDto
-				{
-					Id = r.Id,
-					ReviewerName = r.ReviewerName,
-					Comment = r.Comment,
-					Rating = r.Rating
-				}).ToListAsync();
+			IEnumerable<ReviewDto> movieReview = await _unitOfWork.Reviews.GetAllReviewsForMovieAsync(movieId);
 
 			return Ok(movieReview);
 		}
