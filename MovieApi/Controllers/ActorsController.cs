@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieActorDto;
 using MovieCore.Models.Entities;
 using MovieData.Data;
@@ -14,11 +15,13 @@ namespace MovieApi.Controllers
 	{
 		private readonly MovieApiContext _context;
 		private readonly IMapper _mapper;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public ActorsController(MovieApiContext context, IMapper mapper)
+		public ActorsController(MovieApiContext context, IMapper mapper, IUnitOfWork unitOfWork)
 		{
 			_context = context;
 			_mapper = mapper;
+			_unitOfWork = unitOfWork;
 		}
 
 
@@ -44,7 +47,7 @@ namespace MovieApi.Controllers
 			[FromRoute] int movieId)
 		{
 
-			var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+			var movie = await _unitOfWork.Movies.GetMovieAsync(movieId, changeTracker: true);
 
 			if (movie is null)
 			{
@@ -56,7 +59,7 @@ namespace MovieApi.Controllers
 				);
 			}
 
-			bool actorExists = await _context.Actors.AnyAsync(a => a.Id == movieActorCreateDto.ActorId);
+			bool actorExists = await _unitOfWork.Actors.AnyAsync(movieActorCreateDto.ActorId);
 
 			if (!actorExists)
 			{
@@ -71,8 +74,9 @@ namespace MovieApi.Controllers
 			MovieActor movieActor = _mapper.Map<MovieActor>(movieActorCreateDto);
 			
 			movie.MovieActors.Add(_mapper.Map<MovieActor>(movieActorCreateDto));
-			
-			await _context.SaveChangesAsync();
+
+
+			await _unitOfWork.CompleteAsync();
 
 			return NoContent();
 		}

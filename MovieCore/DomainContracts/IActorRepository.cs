@@ -2,12 +2,11 @@
 
 namespace MovieCore.DomainContracts;
 
-public interface IActorRepository : IRepositoryBase<Actor>
+/// <summary>
+/// Defines data access operations specific to <see cref="Actor"/> entities.
+/// Inherits basic query capabilities from <see cref="IRepositoryQueries{Actor}"/>.
+/// </summary>
+public interface IActorRepository : IRepositoryQueries<Actor>
 {
-	public Task<bool> AnyAsync(int id);
-	public Task<IEnumerable<Actor>> GetAllAsync();
-	public Task<Actor?> GetAsync(int id);
-	void Add(Actor entity);
-	void update(Actor entity);
-	void remove(Actor entity);
+	Task<bool> AnyAsync(int id);
 }

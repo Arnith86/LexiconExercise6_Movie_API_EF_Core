@@ -18,19 +18,19 @@ public interface IUnitOfWork
 	/// </summary>
 	IMovieGenreRepository MovieGenres { get; }
 
-		///// <summary>
-		///// Gets the repository for handling <see cref="Entities.Review"/> entities.
-		///// </summary>
-		//IReviewRepository Reviews { get; }
+	///// <summary>
+	///// Gets the repository for handling <see cref="Entities.Review"/> entities.
+	///// </summary>
+	//IReviewRepository Reviews { get; }
 
-		///// <summary>
-		///// Gets the repository for handling <see cref="Entities.Actor"/> entities.
-		///// </summary>
-		//IActorRepository Actors { get; }
+	/// <summary>
+	/// Gets the repository for handling <see cref="Entities.Actor"/> entities.
+	/// </summary>
+	IActorRepository Actors { get; }
 
-		/// <summary>
-		/// Persists all changes made through the repositories in a single transaction.
-		/// </summary>
-		/// <returns>A task representing the asynchronous save operation.</returns>
-		Task CompleteAsync();
+	/// <summary>
+	/// Persists all changes made through the repositories in a single transaction.
+	/// </summary>
+	/// <returns>A task representing the asynchronous save operation.</returns>
+	Task CompleteAsync();
 }
