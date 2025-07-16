@@ -171,4 +171,27 @@ public class MovieServices : IMovieServices
 
 		return true;
 	}
+
+	public async Task<bool> RemoveMovieAsync(int id)
+	{
+		var movie = await _unitOfWork.Movies.GetMovieAsync(id);
+
+		if (movie is null)
+		{
+			//return Problem(
+			//	statusCode: StatusCodes.Status404NotFound,
+			//	title: "Invalid movie genre ID",
+			//	detail: $"No movie genre with ID {id} was found.",
+			//	instance: HttpContext.Request.Path
+			//);
+
+			// ToDo : Create a custom exception and handle this exception in program.cs
+			throw new ArgumentNullException(nameof(movie), $"No movie genre with ID {id} was found.");
+		}
+
+		_unitOfWork.Movies.Remove(movie);
+		await _unitOfWork.CompleteAsync();
+
+		return true;
+	}
 }
