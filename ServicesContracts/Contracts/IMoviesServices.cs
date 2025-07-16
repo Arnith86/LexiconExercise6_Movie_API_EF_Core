@@ -5,7 +5,7 @@ namespace Services.Contracts.Contracts;
 /// <summary>
 /// Provides service-level operations related to movie entities, acting as an intermediary between the controller and data access layers.
 /// </summary>
-public interface IMovieServices
+public interface IMoviesServices
 {
 	/// <summary>
 	/// Retrieves a collection of all movies with their associated genre information.

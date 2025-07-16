@@ -12,12 +12,12 @@ namespace Movie.Services.Services;
 /// and the underlying repositories. Handles mapping between entity models and DTOs using AutoMapper,
 /// and ensures validation and existence checks for movie and genre operations.
 /// </summary>
-public class MovieServices : IMovieServices
+public class MoviesServices : IMoviesServices
 {
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly IMapper _mapper;
 
-	public MovieServices(IUnitOfWork unitOfWork, IMapper mapper)
+	public MoviesServices(IUnitOfWork unitOfWork, IMapper mapper)
 	{
 		_unitOfWork = unitOfWork;
 		_mapper = mapper;
