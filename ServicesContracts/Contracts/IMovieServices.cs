@@ -9,4 +9,5 @@ public interface IMovieServices
 	Task<MovieWithGenreDetailsDto?> GetMovieDetailsAsync(int id);
 	Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id);
 	Task<(MovieWithGenreIdDto? mwgiDto, int movieId)> AddMovieAsync(MovieCreateDto movieCreateDto);
+	Task<bool> UpdateMovieAsync(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto);
 }

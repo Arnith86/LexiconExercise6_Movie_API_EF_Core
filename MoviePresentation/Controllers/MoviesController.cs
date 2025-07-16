@@ -131,71 +131,29 @@ public class MoviesController : ControllerBase
 	}
 
 
-
-	//	// PUT: api/Movies/5
-	//	/// <summary>
-	//	/// Updates an existing movie with new title, year, duration, and genre.
-	//	/// </summary>
-	//	/// <param name="id">The ID of the movie to update.</param>
-	//	/// <param name="movieWithGenreIdUpdateDto">The updated movie data.</param>
-	//	/// <returns>No content on success; NotFound if the movie is not found; error if concurrency conflict occurs.</returns>
-	//	/// <response code="204">The movie was successfully updated.</response>
-	//	/// <response code="404">No movie with the specified ID was found.</response>
-	//	/// <response code="400">No genre with the specified MovieGenreIdwas found.</response>
-	//	[HttpPut("{id}")]
-	//	[SwaggerOperation(
-	//	Summary = "Update an existing movie.",
-	//	Description = "Updates an existing movie's title, year, duration, and associated genre. Requires the movie ID and the updated data."
-	//)]
-	//	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	//	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-	//	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-	//	public async Task<IActionResult> PutMovie(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
-	//	{
-	//		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: true);
-
-	//		if (movie is null)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status404NotFound,
-	//				title: "Invalid movie ID",
-	//				detail: $"No movie with ID {id} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
-
-	//		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieWithGenreIdUpdateDto.MovieGenreId);
-
-	//		if (!genre)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status400BadRequest,
-	//				title: "Invalid movie genre ID",
-	//				detail: $"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
-
-	//		_mapper.Map(movieWithGenreIdUpdateDto, movie);  
-
-	//		try
-	//		{
-	//			await _unitOfWork.CompleteAsync();
-	//		}
-	//		catch (DbUpdateConcurrencyException)
-	//		{
-	//			if (!await _unitOfWork.Movies.AnyAsync(id))
-	//			{
-	//				return NotFound();
-	//			}
-	//			else
-	//			{
-	//				throw;
-	//			}
-	//		}
-
-	//		return NoContent();
-	//	}
+	// PUT: api/Movies/5
+	/// <summary>
+	/// Updates an existing movie with new title, year, duration, and genre.
+	/// </summary>
+	/// <param name="id">The ID of the movie to update.</param>
+	/// <param name="movieWithGenreIdUpdateDto">The updated movie data.</param>
+	/// <returns>No content on success; NotFound if the movie is not found; error if concurrency conflict occurs.</returns>
+	/// <response code="204">The movie was successfully updated.</response>
+	/// <response code="404">No movie with the specified ID was found.</response>
+	/// <response code="400">No genre with the specified MovieGenreIdwas found.</response>
+	[HttpPut("{id}")]
+	[SwaggerOperation(
+	Summary = "Update an existing movie.",
+	Description = "Updates an existing movie's title, year, duration, and associated genre. Requires the movie ID and the updated data."
+)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+	public async Task<IActionResult> PutMovie(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
+	{
+		await _serviceManager.MovieServices.UpdateMovieAsync(id, movieWithGenreIdUpdateDto);
+		return NoContent();
+	}
 
 
 	//	// DELETE: api/Movies/5

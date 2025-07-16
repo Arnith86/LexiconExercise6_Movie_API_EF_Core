@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieDtos;
 using MovieCore.Models.Entities;
@@ -100,7 +101,6 @@ public class MovieServices : IMovieServices
 			//	instance: HttpContext.Request.Path
 			//);
 
-			//// ToDo : Create a custom exception and handle this exception in program.cs 
 			throw new ArgumentNullException(
 				nameof(movieCreateDto), 
 				$"No movie genre with ID {movieCreateDto.MovieGenreId} was found."
@@ -113,5 +113,62 @@ public class MovieServices : IMovieServices
 		await _unitOfWork.CompleteAsync();
 
 		return (_mapper.Map<MovieWithGenreIdDto>(movie), movie.Id);
+	}
+
+	public async Task<bool> UpdateMovieAsync(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
+	{
+		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: true);
+
+		if (movie is null)
+		{
+			//return Problem(
+			//	statusCode: StatusCodes.Status404NotFound,
+			//	title: "Invalid movie ID",
+			//	detail: $"No movie with ID {id} was found.",
+			//	instance: HttpContext.Request.Path
+			//);
+
+			// ToDo : Create a custom exception and handle this exception in program.cs 
+			throw new ArgumentNullException(nameof(movie), $"No movie with ID {id} was found.");
+		}
+
+		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieWithGenreIdUpdateDto.MovieGenreId);
+
+		if (!genre)
+		{
+			//return Problem(
+			//	statusCode: StatusCodes.Status400BadRequest,
+			//	title: "Invalid movie genre ID",
+			//	detail: $"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
+			//	instance: HttpContext.Request.Path
+			//);
+
+			throw new ArgumentNullException(
+				$"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found."
+			);
+		}
+
+		_mapper.Map(movieWithGenreIdUpdateDto, movie);
+
+		try
+		{
+			await _unitOfWork.CompleteAsync();
+		}
+		catch (DbUpdateConcurrencyException)
+		{
+			if (!await _unitOfWork.Movies.AnyAsync(id))
+			{
+				// ToDo : Create a custom exception and handle this exception in program.cs //NotFound();
+				throw new ArgumentNullException(
+					$"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found."
+				);
+			}
+			else
+			{
+				throw;
+			}
+		}
+
+		return true;
 	}
 }
