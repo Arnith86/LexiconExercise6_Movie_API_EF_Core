@@ -43,7 +43,7 @@ public class MovieServices : IMovieServices
 		return _mapper.Map<MovieWithGenreDto>(movie);
 	}
 
-	public async Task<MovieWithGenreDetailsDto?> GetMovieDetails(int id)
+	public async Task<MovieWithGenreDetailsDto?> GetMovieDetailsAsync(int id)
 	{
 		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
 				await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
@@ -65,7 +65,7 @@ public class MovieServices : IMovieServices
 		return movieWithGenreDetailsDto;
 	}
 
-	public async Task<MovieDetailDto?> GetMovieFullDetails(int id)
+	public async Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id)
 	{
 		var movieExists = await _unitOfWork.Movies.AnyAsync(id);
 

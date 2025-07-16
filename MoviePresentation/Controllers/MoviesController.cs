@@ -79,7 +79,7 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDetailsDto))]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id) =>
-		Ok(await _serviceManager.MovieServices.GetMovieDetails(id));
+		Ok(await _serviceManager.MovieServices.GetMovieDetailsAsync(id));
 
 
 
@@ -102,7 +102,7 @@ public class MoviesController : ControllerBase
 		Description = "Retrieves a movie by ID, including its genre, synopsis, budget, language, reviews, and actors."
 	)]
 	public async Task<ActionResult<MovieDetailDto>> GetMovieFullDetails(int id)
-		=> Ok(await _serviceManager.MovieServices.GetMovieFullDetails(id));
+		=> Ok(await _serviceManager.MovieServices.GetMovieFullDetailsAsync(id));
 
 
 

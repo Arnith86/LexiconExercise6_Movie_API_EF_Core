@@ -6,6 +6,6 @@ public interface IMovieServices
 {
 	Task<IEnumerable<MovieWithGenreDto>> GetAllMoviesAsync();
 	Task<MovieWithGenreDto?> GetMovieAsync(int id);
-	Task<MovieWithGenreDetailsDto?> GetMovieDetails(int id);
-	Task<MovieDetailDto?> GetMovieFullDetails(int id);
+	Task<MovieWithGenreDetailsDto?> GetMovieDetailsAsync(int id);
+	Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id);
 }
