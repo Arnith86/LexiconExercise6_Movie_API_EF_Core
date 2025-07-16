@@ -1,9 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Movie.Services;
+using Movie.Services.Services;
 using MovieCore.DomainContracts;
 using MovieData.Data;
 using MovieData.Data.Configurations;
 using MovieData.Extensions;
 using MovieData.Repositories;
+using Services.Contracts;
+using Services.Contracts.Contracts;
+using MoviePresentation;
+
 
 namespace MovieApi
 {
@@ -33,11 +39,20 @@ namespace MovieApi
 				config.AddProfile<MapperProfile>()
 			);
 
-			builder.Services.AddControllers();
+			builder.Services.AddControllers()
+				// Makes ASP.NET Core look for controllers in another project (MoviePresentation in this case).
+				.AddApplicationPart(typeof(AssemblyReference).Assembly);
 
 			// "AddScoped" is chosen, because context is scoped. As such the lifetime of the service needs
 			// to match. 
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+			builder.Services.AddScoped<IServiceManager, ServiceManager>();
+			builder.Services.AddScoped<IMovieServices, MovieServices>();
+			builder.Services.AddScoped(provider =>
+				new Lazy<IMovieServices>(() => provider.GetRequiredService<IMovieServices>())
+			);
 
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			//builder.Services.AddOpenApi();
@@ -54,7 +69,6 @@ namespace MovieApi
 				{
 					// Tell it exactly where the JSON file is
 					options.SwaggerEndpoint("/swagger/v1/swagger.json", "Movie API V1");
-					//options.RoutePrefix = string.Empty; // So it shows at https://localhost:7120/
 				});
 				await app.SeedData();
 			}
@@ -63,7 +77,6 @@ namespace MovieApi
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
-
 
 			app.MapControllers();
 

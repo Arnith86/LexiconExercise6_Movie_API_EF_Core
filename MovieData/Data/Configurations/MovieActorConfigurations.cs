@@ -12,7 +12,7 @@ namespace MovieData.Data.Configurations
 			builder.HasKey(ma => new { ma.MovieId, ma.ActorId });
 
 
-			builder.HasOne<Movie>(m => m.Movie)
+			builder.HasOne<VideoMovie>(m => m.Movie)
 				.WithMany(m => m.MovieActors)
 				.HasForeignKey(ma => ma.MovieId)
 				.IsRequired();

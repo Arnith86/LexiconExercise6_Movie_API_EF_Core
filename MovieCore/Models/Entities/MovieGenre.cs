@@ -9,5 +9,5 @@ public class MovieGenre : EntityBase
 {
 	public int Id { get; set; }
 	public string Genre { get; set; } = null!;
-	public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+	public ICollection<VideoMovie> Movies { get; set; } = new List<VideoMovie>();
 }

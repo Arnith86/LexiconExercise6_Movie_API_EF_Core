@@ -10,5 +10,5 @@ public class Review : EntityBase
 	public string ReviewerName { get; set; } = null!;
 	public string Comment { get; set; } = null!;
 	public int Rating { get; set; }
-	public Movie Movie { get; set; } = null!;
+	public VideoMovie Movie { get; set; } = null!;
 }

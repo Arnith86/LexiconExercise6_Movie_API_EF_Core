@@ -9,20 +9,20 @@ public class MapperProfile : Profile
 {
 	public MapperProfile()
 	{
-		CreateMap<Movie, MovieWithGenreDto>()
+		CreateMap<VideoMovie, MovieWithGenreDto>()
 			.ForMember(dest => dest.MovieGenre, opt => opt.MapFrom(src => src.MoviesGenre!.Genre));
 
-		CreateMap<Movie, MovieWithGenreDetailsDto>()
+		CreateMap<VideoMovie, MovieWithGenreDetailsDto>()
 			.ForMember(dest => dest.MovieGenre, opt => opt.MapFrom(src => src.MoviesGenre!.Genre))
 			.ForMember(dest => dest.Synopsis, opt => opt.MapFrom(src => src.MoviesDetails!.Synopsis))
 			.ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.MoviesDetails!.Language))
 			.ForMember(dest => dest.Budget, opt => opt.MapFrom(src => src.MoviesDetails!.Budget));
 
-		CreateMap<MovieCreateDto, Movie>();
+		CreateMap<MovieCreateDto, VideoMovie>();
 
-		CreateMap<Movie, MovieWithGenreIdDto>();
+		CreateMap<VideoMovie, MovieWithGenreIdDto>();
 
-		CreateMap<MovieWithGenreIdUpdateDto, Movie>();
+		CreateMap<MovieWithGenreIdUpdateDto, VideoMovie>();
 
 		CreateMap<MovieActorCreateDto, MovieActor>();
 

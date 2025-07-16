@@ -11,6 +11,6 @@ public class MovieDetails : EntityBase
 	public string? Synopsis { get; set; } = null!;
 	public string? Language { get; set; } = null!;
 	public int Budget { get; set; }
-	public Movie Movie { get; set; } = null!;
+	public VideoMovie Movie { get; set; } = null!;
 
 }

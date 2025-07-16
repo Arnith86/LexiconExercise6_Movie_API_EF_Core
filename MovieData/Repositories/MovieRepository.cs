@@ -9,10 +9,10 @@ using MovieData.Data;
 namespace MovieData.Repositories;
 
 /// <summary>
-/// Repository implementation for accessing and managing <see cref="Movie"/> entities.
+/// Repository implementation for accessing and managing <see cref="VideoMovie"/> entities.
 /// Inherits common CRUD and query functionality from <see cref="RepositoryBase{T}"/>.
 /// </summary>
-public class MovieRepository : RepositoryBase<Movie>, IMovieRepository
+public class MovieRepository : RepositoryBase<VideoMovie>, IMovieRepository
 {
 
 	public MovieRepository(MovieApiContext context) : base(context)
@@ -21,15 +21,15 @@ public class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 
 	public async Task<bool> AnyAsync(int id) => await FindAnyAsync(m => m.Id.Equals(id));
 
-	public async Task<List<Movie>> GetAllMoviesAsync(bool changeTracker = false) => 
+	public async Task<List<VideoMovie>> GetAllMoviesAsync(bool changeTracker = false) => 
 		await GetAll(changeTracker).Include(m => m.MoviesGenre).ToListAsync();
 
-	public async Task<Movie?> GetMovieAsync(int id, bool changeTracker = false) =>	
+	public async Task<VideoMovie?> GetMovieAsync(int id, bool changeTracker = false) =>	
 		await GetByCondition(m => m.Id.Equals(id), changeTracker)
 				.Include(m => m.MoviesGenre)
 				.FirstOrDefaultAsync();
 
-	public async Task<Movie?> GetMovieDetailsAsync(int id, bool changeTracker = false) =>
+	public async Task<VideoMovie?> GetMovieDetailsAsync(int id, bool changeTracker = false) =>
 		await GetByCondition(gmd => gmd.Id.Equals(id))
 				.Include(md => md.MoviesDetails)
 				.Include(mg => mg.MoviesGenre)

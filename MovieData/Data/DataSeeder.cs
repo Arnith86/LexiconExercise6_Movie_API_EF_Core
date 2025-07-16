@@ -47,7 +47,7 @@ internal class DataSeeder
 		await context.SaveChangesAsync();
 	}
 
-	private static async Task<IEnumerable<MovieDetails>> GenerateMoviesDetailsAsync(IEnumerable<Movie> movies)
+	private static async Task<IEnumerable<MovieDetails>> GenerateMoviesDetailsAsync(IEnumerable<VideoMovie> movies)
 	{
 		List<MovieDetails> movieDetails = new List<MovieDetails>();
 
@@ -88,13 +88,13 @@ internal class DataSeeder
 		return actors;
 	}
 
-	private static async Task<IEnumerable<Movie>> GenerateMoviesAsync(
+	private static async Task<IEnumerable<VideoMovie>> GenerateMoviesAsync(
 		int numberOfMovies,
 		IList<MovieGenre> movieGenres,
 		IList<Actor> actors)
 	{
 		Random random = new Random();
-		var movies = new List<Movie>(numberOfMovies);
+		var movies = new List<VideoMovie>(numberOfMovies);
 
 		for (int i = 0; i < numberOfMovies; i++)
 		{
@@ -105,7 +105,7 @@ internal class DataSeeder
 			int nrOfReviews = random.Next(0, 4);
 			int whichGenre = random.Next(0, movieGenres.Count - 1);
 
-			var movie = new Movie()
+			var movie = new VideoMovie()
 			{
 				Title = fMovieTitle,
 				Year = fYear,
@@ -144,7 +144,7 @@ internal class DataSeeder
 
 	private static IEnumerable<MovieActor> AssignActorsToMovie(
 		IEnumerable<Actor> actors,
-		IEnumerable<Movie> movies,
+		IEnumerable<VideoMovie> movies,
 		int activeActors)
 	{
 		var actorList = actors.Take(activeActors);

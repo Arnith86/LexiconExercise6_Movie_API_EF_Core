@@ -4,9 +4,9 @@ using MovieCore.Models.Entities;
 
 namespace MovieData.Data.Configurations
 {
-	internal class MovieConfigurations : IEntityTypeConfiguration<Movie>
+	internal class MovieConfigurations : IEntityTypeConfiguration<VideoMovie>
 	{
-		public void Configure(EntityTypeBuilder<Movie> builder)
+		public void Configure(EntityTypeBuilder<VideoMovie> builder)
 		{
 			builder.HasKey(m => m.Id);
 

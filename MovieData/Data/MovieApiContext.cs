@@ -11,7 +11,7 @@ public class MovieApiContext : DbContext
 	{
 	}
 
-	public DbSet<Movie> Movies { get; set; } = default!;
+	public DbSet<VideoMovie> Movies { get; set; } = default!;
 	public DbSet<MovieDetails> MovieDetails { get; set; } = default!;
 	public DbSet<MovieGenre> MovieGenres { get; set; } = default!;
 	public DbSet<Review> Reviews { get; set; } = default!;

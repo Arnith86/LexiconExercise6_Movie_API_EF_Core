@@ -4,10 +4,10 @@ namespace MovieCore.Models.Entities;
 
 /// <summary>
 /// Represents a movie entity with core properties such as title, year, genre, and duration.
-/// Includes an optional one-to-one relationship with <see cref="MoviesDetails"/> for extended information,
+/// Includes an optional one-to-one relationship with <see cref="MovieDetails"/> for extended information,
 /// and a one-to-many relationship with <see cref="Review"/> representing user reviews.
 /// </summary>
-public class Movie : EntityBase
+public class VideoMovie : EntityBase
 {
 	public int Id { get; set; }
 	public string Title { get; set; } = null!;
