@@ -1,16 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Movie.Services;
-using Movie.Services.Services;
+using MovieApi.ExtensionsDependencyInjection;
 using MovieCore.DomainContracts;
 using MovieData.Data;
 using MovieData.Data.Configurations;
 using MovieData.Extensions;
 using MovieData.Repositories;
 using MoviePresentation;
-using MovieServices.Services;
-using Services.Contracts;
-using Services.Contracts.Contracts;
-using ServicesContracts.Contracts;
 
 
 namespace MovieApi
@@ -50,15 +45,8 @@ namespace MovieApi
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
-			builder.Services.AddScoped<IServiceManager, ServiceManager>();
-			builder.Services.AddScoped<IMoviesServices, MoviesServices>();
-			builder.Services.AddScoped(provider =>
-				new Lazy<IMoviesServices>(() => provider.GetRequiredService<IMoviesServices>())
-			);
-			builder.Services.AddScoped<IReviewServices, ReviewServices>();
-			builder.Services.AddScoped(provider =>
-				new Lazy<IReviewServices>(() => provider.GetRequiredService<IReviewServices>())
-			);
+			builder.Services.AddServiceLayer();
+
 
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			//builder.Services.AddOpenApi();

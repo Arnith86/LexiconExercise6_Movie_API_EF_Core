@@ -2,10 +2,13 @@
 using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.ReviewDTOs;
 using ServicesContracts.Contracts;
-using System.Net.Http;
 
 namespace MovieServices.Services;
 
+/// <summary>
+/// Provides review-related operations for movies, such as retrieving all reviews associated with 
+/// a specific movie. Implements the <see cref="IReviewServices"/> interface.
+/// </summary>
 public class ReviewServices : IReviewServices
 {
 	private readonly IMapper _mapper;
@@ -17,6 +20,7 @@ public class ReviewServices : IReviewServices
 		_unitOfWork = unitOfWork;
 	}
 
+	/// <inheritdoc/>
 	public async Task<IEnumerable<ReviewDto>> GetAllReviews(int movieId)
 	{
 		var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
