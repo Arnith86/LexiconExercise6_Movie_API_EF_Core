@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieDtos;
+using MovieCore.Models.Entities;
 using Services.Contracts.Contracts;
+using System.Net.Http;
 
 namespace Movie.Services.Services;
 
@@ -15,6 +17,7 @@ public class MovieServices : IMovieServices
 		_unitOfWork = unitOfWork;
 		_mapper = mapper;
 	}
+
 
 	public async Task<IEnumerable<MovieWithGenreDto>> GetAllMoviesAsync()
 	{
@@ -78,10 +81,37 @@ public class MovieServices : IMovieServices
 			//	instance: HttpContext.Request.Path
 			//);
 
-			// ToDo : Create a custom exception and handle this exception in program.cs 
 			throw new ArgumentNullException($"No movie with ID {id} was found.");
 		}
 
 		return await _unitOfWork.Movies.GetMovieFullDetailsAsync(id, changeTracker: false);
+	}
+
+	public async Task<(MovieWithGenreIdDto? mwgiDto, int movieId)> AddMovieAsync(MovieCreateDto movieCreateDto)
+	{
+		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
+
+		if (!genre)
+		{
+			//return Problem(
+			//	statusCode: StatusCodes.Status400BadRequest,
+			//	title: "Invalid movie genre ID",
+			//	detail: $"No movie genre with ID {movieCreateDto.MovieGenreId} was found.",
+			//	instance: HttpContext.Request.Path
+			//);
+
+			//// ToDo : Create a custom exception and handle this exception in program.cs 
+			throw new ArgumentNullException(
+				nameof(movieCreateDto), 
+				$"No movie genre with ID {movieCreateDto.MovieGenreId} was found."
+			);
+		}
+
+		VideoMovie movie = _mapper.Map<VideoMovie>(movieCreateDto);
+
+		_unitOfWork.Movies.Add(movie);
+		await _unitOfWork.CompleteAsync();
+
+		return (_mapper.Map<MovieWithGenreIdDto>(movie), movie.Id);
 	}
 }

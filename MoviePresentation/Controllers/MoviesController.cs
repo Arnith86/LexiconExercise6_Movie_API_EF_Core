@@ -106,48 +106,29 @@ public class MoviesController : ControllerBase
 
 
 
-	//	// POST: api/Movies
-	//	/// <summary>
-	//	/// Creates a new movie with basic information such as title, year, duration, and genre.
-	//	/// </summary>
-	//	/// <param name="genreId">The ID of the genre to associate with the new movie. Must refer to an existing genre.</param>
-	//	/// <param name="movieCreateDto">The data used to create the movie.</param>
-	//	/// <returns>The created movie's basic information including the associated genre ID.</returns>
-	//	/// <response code="201">Returns the created movie with genre ID.</response>
-	//	/// <response code="400">Returned if the specified genre does not exist or the request is invalid.</response>
-	//	[HttpPost]
-	//	[SwaggerOperation(
-	//		Summary = "Create a new movie.",
-	//		Description = "Adds a new movie to the database using basic details like title, year, " +
-	//		"and duration. Requires a valid genre ID to associate the movie with."
-	//	)]
-	//	[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieWithGenreIdDto))]
-	//	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-	//	public async Task<ActionResult<MovieWithGenreIdDto>> PostMovie(MovieCreateDto movieCreateDto)
-	//	{
+	// POST: api/Movies
+	/// <summary>
+	/// Creates a new movie with basic information such as title, year, duration, and genre.
+	/// </summary>
+	/// <param name="genreId">The ID of the genre to associate with the new movie. Must refer to an existing genre.</param>
+	/// <param name="movieCreateDto">The data used to create the movie.</param>
+	/// <returns>The created movie's basic information including the associated genre ID.</returns>
+	/// <response code="201">Returns the created movie with genre ID.</response>
+	/// <response code="400">Returned if the specified genre does not exist or the request is invalid.</response>
+	[HttpPost]
+	[SwaggerOperation(
+		Summary = "Create a new movie.",
+		Description =	"Adds a new movie to the database using basic details like title, year, " +
+						"and duration. Requires a valid genre ID to associate the movie with."
+	)]
+	[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieWithGenreIdDto))]
+	[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+	public async Task<ActionResult<MovieWithGenreIdDto>> PostMovie(MovieCreateDto movieCreateDto)
+	{
+		var (movieWithGenreIdDto, movieId) =  await _serviceManager.MovieServices.AddMovieAsync(movieCreateDto);
 
-	//		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
-
-	//		if (!genre)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status400BadRequest,
-	//				title: "Invalid movie genre ID",
-	//				detail: $"No movie genre with ID {movieCreateDto.MovieGenreId} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
-
-	//		Movie movie = _mapper.Map<Movie>(movieCreateDto);
-
-
-	//		_unitOfWork.Movies.Add(movie);
-	//		await _unitOfWork.CompleteAsync();
-
-	//		MovieWithGenreIdDto movieWithGenreIdDto = _mapper.Map<MovieWithGenreIdDto>(movie);
-
-	//		return CreatedAtAction("GetMovie", new { id = movie.Id }, movieWithGenreIdDto);
-	//	}
+		return CreatedAtAction("GetMovie", new { id = movieId}, movieWithGenreIdDto);
+	}
 
 
 
