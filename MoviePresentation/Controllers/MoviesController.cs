@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieCore.Models.DTOs.MovieDtos;
 using Services.Contracts;
@@ -34,8 +33,8 @@ public class MoviesController : ControllerBase
 		Summary = "Retrieve all movies",
 		Description = "Returns a simplified list of all registered movies including basic details and genre.")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieWithGenreDto>))]
-	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies() => 
-			Ok(await _serviceManager.MovieServices.GetAllMoviesAsync(changeTracker: false));
+	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies() =>
+			Ok(await _serviceManager.MovieServices.GetAllMoviesAsync());
 
 
 	// GET: api/Movies/5
@@ -57,84 +56,54 @@ public class MoviesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDto))]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id) =>
-			Ok(await _serviceManager.MovieServices.GetMovieAsync(id, changeTracker: false));
-	
-
-	//	// GET: api/Movies/5/details
-	//	/// <summary>
-	//	/// Retrieves a simplified representation of a specific movie by its ID, with more detailed information.
-	//	/// </summary>
-	//	/// <param name="id">The unique identifier of the movie.</param>
-	//	/// <remarks>
-	//	/// Returns movie details including:
-	//	/// - Id, Title, Genre (as a string), Duration, Release Year
-	//	/// - Synopsis, Language and Budget
-	//	/// </remarks>
-	//	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
-	//	/// <response code="200">Returns the requested movie.</response>
-	//	/// <response code="404">If no movie with the specified ID exists.</response>
-	//	[HttpGet("{id}/descriptive")]
-	//	[SwaggerOperation(
-	//		Summary = "Get a specific movie by ID",
-	//		Description = "Returns movie details for the movie with the given ID, including genre info and details.")]
-	//	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDetailsDto))]
-	//	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	//	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id)
-	//	{
-	//		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
-	//			await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
-	//		);
-
-	//		if (movieWithGenreDetailsDto is null)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status404NotFound,
-	//				title: "Invalid movie genre ID",
-	//				detail: $"No movie genre with ID {id} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
-
-	//		return Ok(movieWithGenreDetailsDto);
-	//	}
+		Ok(await _serviceManager.MovieServices.GetMovieAsync(id));
 
 
-	//	// GET: api/Movies/5/details
-	//	/// <summary>
-	//	/// Retrieves detailed information about a specific movie, including its genre, synopsis, budget, language, reviews, and associated actors.
-	//	/// </summary>
-	//	/// <param name="id">The ID of the movie to retrieve details for.</param>
-	//	/// <returns>
-	//	/// Returns a <see cref="MovieDetailDto"/> containing detailed information about the specified movie,
-	//	/// or a <see cref="ProblemDetails"/> object if the movie is not found.
-	//	/// </returns>
-	//	/// <response code="200">Returns the full movie details.</response>
-	//	/// <response code="404">No movie with the specified ID was found.</response>
-	//	[HttpGet("{id}/details")]
-	//	[ProducesResponseType(typeof(MovieDetailDto), StatusCodes.Status200OK)]
-	//	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-	//	[SwaggerOperation(
-	//		Summary = "Get full movie details",
-	//		Description = "Retrieves a movie by ID, including its genre, synopsis, budget, language, reviews, and actors."
-	//	)]
-	//	public async Task<ActionResult<MovieDetailDto>> GetMovieFullDetails(int id)
-	//	{
-	//		var movieExists = await _unitOfWork.Movies.AnyAsync(id);
+	// GET: api/Movies/5/details
+	/// <summary>
+	/// Retrieves a simplified representation of a specific movie by its ID, with more detailed information.
+	/// </summary>
+	/// <param name="id">The unique identifier of the movie.</param>
+	/// <remarks>
+	/// Returns movie details including:
+	/// - Id, Title, Genre (as a string), Duration, Release Year
+	/// - Synopsis, Language and Budget
+	/// </remarks>
+	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
+	/// <response code="200">Returns the requested movie.</response>
+	/// <response code="404">If no movie with the specified ID exists.</response>
+	[HttpGet("{id}/descriptive")]
+	[SwaggerOperation(
+		Summary = "Get a specific movie by ID",
+		Description = "Returns movie details for the movie with the given ID, including genre info and details.")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDetailsDto))]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<ActionResult<MovieWithGenreDetailsDto>> GetMovieDetails(int id) =>
+		Ok(await _serviceManager.MovieServices.GetMovieDetails(id));
 
-	//		if (!movieExists)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status404NotFound,
-	//				title: "Invalid movie ID",
-	//				detail: $"No movie with ID {id} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
 
-	//		var movieFullDetailsDto = await _unitOfWork.Movies.GetMovieFullDetailsAsync(id);
 
-	//		return Ok(movieFullDetailsDto);
-	//	}
+	// GET: api/Movies/5/details
+	/// <summary>
+	/// Retrieves detailed information about a specific movie, including its genre, synopsis, budget, language, reviews, and associated actors.
+	/// </summary>
+	/// <param name="id">The ID of the movie to retrieve details for.</param>
+	/// <returns>
+	/// Returns a <see cref="MovieDetailDto"/> containing detailed information about the specified movie,
+	/// or a <see cref="ProblemDetails"/> object if the movie is not found.
+	/// </returns>
+	/// <response code="200">Returns the full movie details.</response>
+	/// <response code="404">No movie with the specified ID was found.</response>
+	[HttpGet("{id}/details")]
+	[ProducesResponseType(typeof(MovieDetailDto), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+	[SwaggerOperation(
+		Summary = "Get full movie details",
+		Description = "Retrieves a movie by ID, including its genre, synopsis, budget, language, reviews, and actors."
+	)]
+	public async Task<ActionResult<MovieDetailDto>> GetMovieFullDetails(int id)
+		=> Ok(await _serviceManager.MovieServices.GetMovieFullDetails(id));
+
 
 
 	//	// POST: api/Movies
