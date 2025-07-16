@@ -11,20 +11,11 @@ namespace MovieApi.Controllers;
 [ApiController]
 public class MoviesController : ControllerBase
 {
-	//private readonly MovieApiContext _context;
-	private readonly IMapper _mapper;
 	private readonly IServiceManager _serviceManager;
 
-	//private readonly IUnitOfWork _unitOfWork;
-
-	public MoviesController(/*MovieApiContext context,*/ 
-		IMapper mapper/*, IUnitOfWork unitOfWork*/, 
-		IServiceManager serviceManager)
+	public MoviesController(IServiceManager serviceManager)
 	{
-		//_context = context;
-		_mapper = mapper;
 		_serviceManager = serviceManager;
-		//_unitOfWork = unitOfWork;
 	}
 
 
@@ -43,53 +34,31 @@ public class MoviesController : ControllerBase
 		Summary = "Retrieve all movies",
 		Description = "Returns a simplified list of all registered movies including basic details and genre.")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MovieWithGenreDto>))]
-	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies()
-	{
+	public async Task<ActionResult<IEnumerable<MovieWithGenreDto>>> GetMovies() => 
+			Ok(await _serviceManager.MovieServices.GetAllMoviesAsync(changeTracker: false));
 
-		//var movieWithGenreDtos = _serviceManager.MovieServices.GetAllMoviesAsync(changeTracker: false);
-		//	_mapper.Map<IEnumerable<MovieWithGenreDto>>(
-		//	await _serviceManager.MovieServices. GetAllMoviesAsync(changeTracker: false)
-		//);
 
-		return Ok(await _serviceManager.MovieServices.GetAllMoviesAsync(changeTracker: false));
-	}
-
-	//	// GET: api/Movies/5
-	//	/// <summary>
-	//	/// Retrieves a simplified representation of a specific movie by its ID.
-	//	/// </summary>
-	//	/// <param name="id">The unique identifier of the movie.</param>
-	//	/// <remarks>
-	//	/// Returns basic movie details including:
-	//	/// Id, Title, Genre (as a string), Duration, Release Year
-	//	/// </remarks>
-	//	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
-	//	/// <response code="200">Returns the requested movie.</response>
-	//	/// <response code="404">If no movie with the specified ID exists.</response>
-	//	[HttpGet("{id}")]
-	//	[SwaggerOperation(
-	//		Summary = "Get a specific movie by ID",
-	//		Description = "Returns simplified movie details for the movie with the given ID, including genre info.")]
-	//	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDto))]
-	//	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	//	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id)
-	//	{
-	//		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: false);
-
-	//		if (movie is null)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status404NotFound,
-	//				title: "Invalid movie genre ID",
-	//				detail: $"No movie genre with ID {id} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
-
-	//		var movieWithGenreDto = _mapper.Map<MovieWithGenreDto>(movie);
-
-	//		return Ok(movieWithGenreDto);
-	//	}
+	// GET: api/Movies/5
+	/// <summary>
+	/// Retrieves a simplified representation of a specific movie by its ID.
+	/// </summary>
+	/// <param name="id">The unique identifier of the movie.</param>
+	/// <remarks>
+	/// Returns basic movie details including:
+	/// Id, Title, Genre (as a string), Duration, Release Year
+	/// </remarks>
+	/// <returns>The requested movie if found; otherwise, a 404 Not Found response.</returns>
+	/// <response code="200">Returns the requested movie.</response>
+	/// <response code="404">If no movie with the specified ID exists.</response>
+	[HttpGet("{id}")]
+	[SwaggerOperation(
+		Summary = "Get a specific movie by ID",
+		Description = "Returns simplified movie details for the movie with the given ID, including genre info.")]
+	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MovieWithGenreDto))]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<ActionResult<MovieWithGenreDto>> GetMovie(int id) =>
+			Ok(await _serviceManager.MovieServices.GetMovieAsync(id, changeTracker: false));
+	
 
 	//	// GET: api/Movies/5/details
 	//	/// <summary>
