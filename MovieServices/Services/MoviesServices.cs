@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieDtos;
 using MovieCore.Models.Entities;
+using MovieCore.Models.Exceptions;
 using Services.Contracts.Contracts;
 
 namespace Movie.Services.Services;
@@ -38,19 +39,8 @@ public class MoviesServices : IMoviesServices
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: false);
 
-		if (movie is null)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status404NotFound,
-			//	title: "Invalid movie genre ID",
-			//	detail: $"No movie genre with ID {id} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			// ToDo : Create a custom exception and handle this exception in program.cs 
-			throw new ArgumentNullException(nameof(movie), $"No movie genre with ID {id} was found.");
-		}
-
+		if (movie is null) throw new MovieNotFoundException(id);
+		
 		return _mapper.Map<MovieWithGenreDto>(movie);
 	}
 
@@ -58,22 +48,11 @@ public class MoviesServices : IMoviesServices
 	public async Task<MovieWithGenreDetailsDto> GetMovieDetailsAsync(int id)
 	{
 		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
-				await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
+			await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
 		);
 
-		if (movieWithGenreDetailsDto is null)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status404NotFound,
-			//	title: "Invalid movie genre ID",
-			//	detail: $"No movie genre with ID {id} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			// ToDo : Create a custom exception and handle this exception in program.cs 
-			throw new ArgumentNullException(nameof(movieWithGenreDetailsDto), $"No movie genre with ID {id} was found.");
-		}
-
+		if (movieWithGenreDetailsDto is null) throw new MovieNotFoundException(id);
+		
 		return movieWithGenreDetailsDto;
 	}
 
@@ -82,18 +61,8 @@ public class MoviesServices : IMoviesServices
 	{
 		var movieExists = await _unitOfWork.Movies.AnyAsync(id);
 
-		if (!movieExists)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status404NotFound,
-			//	title: "Invalid movie ID",
-			//	detail: $"No movie with ID {id} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			throw new ArgumentNullException($"No movie with ID {id} was found.");
-		}
-
+		if (!movieExists) throw new MovieNotFoundException(id);
+		
 		return await _unitOfWork.Movies.GetMovieFullDetailsAsync(id, changeTracker: false);
 	}
 
@@ -102,20 +71,7 @@ public class MoviesServices : IMoviesServices
 	{
 		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
 
-		if (!genre)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status400BadRequest,
-			//	title: "Invalid movie genre ID",
-			//	detail: $"No movie genre with ID {movieCreateDto.MovieGenreId} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			throw new ArgumentNullException(
-				nameof(movieCreateDto),
-				$"No movie genre with ID {movieCreateDto.MovieGenreId} was found."
-			);
-		}
+		if (!genre) throw new MovieGenreNotFoundException(movieCreateDto.MovieGenreId);
 
 		VideoMovie movie = _mapper.Map<VideoMovie>(movieCreateDto);
 
@@ -130,34 +86,11 @@ public class MoviesServices : IMoviesServices
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: true);
 
-		if (movie is null)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status404NotFound,
-			//	title: "Invalid movie ID",
-			//	detail: $"No movie with ID {id} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			// ToDo : Create a custom exception and handle this exception in program.cs 
-			throw new ArgumentNullException(nameof(movie), $"No movie with ID {id} was found.");
-		}
-
+		if (movie is null) throw new MovieNotFoundException(id);
+		
 		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieWithGenreIdUpdateDto.MovieGenreId);
 
-		if (!genre)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status400BadRequest,
-			//	title: "Invalid movie genre ID",
-			//	detail: $"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			throw new ArgumentNullException(
-				$"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found."
-			);
-		}
+		if (!genre) throw new MovieGenreNotFoundException(movieWithGenreIdUpdateDto.MovieGenreId);
 
 		_mapper.Map(movieWithGenreIdUpdateDto, movie);
 
@@ -167,17 +100,8 @@ public class MoviesServices : IMoviesServices
 		}
 		catch (DbUpdateConcurrencyException)
 		{
-			if (!await _unitOfWork.Movies.AnyAsync(id))
-			{
-				// ToDo : Create a custom exception and handle this exception in program.cs //NotFound();
-				throw new ArgumentNullException(
-					$"No movie genre with ID {movieWithGenreIdUpdateDto.MovieGenreId} was found."
-				);
-			}
-			else
-			{
-				throw;
-			}
+			if (!await _unitOfWork.Movies.AnyAsync(id)) throw new MovieNotFoundException(id);
+			else throw;
 		}
 
 		return true;
@@ -188,18 +112,7 @@ public class MoviesServices : IMoviesServices
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id);
 
-		if (movie is null)
-		{
-			//return Problem(
-			//	statusCode: StatusCodes.Status404NotFound,
-			//	title: "Invalid movie genre ID",
-			//	detail: $"No movie genre with ID {id} was found.",
-			//	instance: HttpContext.Request.Path
-			//);
-
-			// ToDo : Create a custom exception and handle this exception in program.cs
-			throw new ArgumentNullException(nameof(movie), $"No movie genre with ID {id} was found.");
-		}
+		if (movie is null) throw new MovieNotFoundException(id);
 
 		_unitOfWork.Movies.Remove(movie);
 		await _unitOfWork.CompleteAsync();

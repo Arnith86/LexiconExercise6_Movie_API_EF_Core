@@ -32,7 +32,7 @@ public interface IMoviesServices
 	/// </summary>
 	/// <param name="id">The ID of the movie.</param>
 	/// <returns>A <see cref="MovieDetailDto"/> with all movie details if found.</returns>
-	Task<MovieDetailDto> GetMovieFullDetailsAsync(int id);
+	Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id);
 
 	/// <summary>
 	/// Adds a new movie to the database.
