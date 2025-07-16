@@ -4,10 +4,14 @@ using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieDtos;
 using MovieCore.Models.Entities;
 using Services.Contracts.Contracts;
-using System.Net.Http;
 
 namespace Movie.Services.Services;
 
+/// <summary>
+/// Implements movie-related business logic and coordinates data access operations between the controller layer
+/// and the underlying repositories. Handles mapping between entity models and DTOs using AutoMapper,
+/// and ensures validation and existence checks for movie and genre operations.
+/// </summary>
 public class MovieServices : IMovieServices
 {
 	private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +23,7 @@ public class MovieServices : IMovieServices
 		_mapper = mapper;
 	}
 
-
+	/// <inheritdoc/>
 	public async Task<IEnumerable<MovieWithGenreDto>> GetAllMoviesAsync()
 	{
 		var movie = await _unitOfWork.Movies.GetAllMoviesAsync(changeTracker: false);
@@ -27,6 +31,7 @@ public class MovieServices : IMovieServices
 		return _mapper.Map<IEnumerable<MovieWithGenreDto>>(movie);
 	}
 
+	/// <inheritdoc/>
 	public async Task<MovieWithGenreDto?> GetMovieAsync(int id)
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: false);
@@ -47,6 +52,7 @@ public class MovieServices : IMovieServices
 		return _mapper.Map<MovieWithGenreDto>(movie);
 	}
 
+	/// <inheritdoc/>
 	public async Task<MovieWithGenreDetailsDto?> GetMovieDetailsAsync(int id)
 	{
 		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
@@ -69,6 +75,7 @@ public class MovieServices : IMovieServices
 		return movieWithGenreDetailsDto;
 	}
 
+	/// <inheritdoc/>
 	public async Task<MovieDetailDto?> GetMovieFullDetailsAsync(int id)
 	{
 		var movieExists = await _unitOfWork.Movies.AnyAsync(id);
@@ -88,6 +95,7 @@ public class MovieServices : IMovieServices
 		return await _unitOfWork.Movies.GetMovieFullDetailsAsync(id, changeTracker: false);
 	}
 
+	/// <inheritdoc/>
 	public async Task<(MovieWithGenreIdDto? mwgiDto, int movieId)> AddMovieAsync(MovieCreateDto movieCreateDto)
 	{
 		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
@@ -102,7 +110,7 @@ public class MovieServices : IMovieServices
 			//);
 
 			throw new ArgumentNullException(
-				nameof(movieCreateDto), 
+				nameof(movieCreateDto),
 				$"No movie genre with ID {movieCreateDto.MovieGenreId} was found."
 			);
 		}
@@ -115,6 +123,7 @@ public class MovieServices : IMovieServices
 		return (_mapper.Map<MovieWithGenreIdDto>(movie), movie.Id);
 	}
 
+	/// <inheritdoc/>
 	public async Task<bool> UpdateMovieAsync(int id, MovieWithGenreIdUpdateDto movieWithGenreIdUpdateDto)
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: true);
@@ -172,6 +181,7 @@ public class MovieServices : IMovieServices
 		return true;
 	}
 
+	/// <inheritdoc/>
 	public async Task<bool> RemoveMovieAsync(int id)
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id);
