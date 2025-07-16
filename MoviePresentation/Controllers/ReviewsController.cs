@@ -1,133 +1,117 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MovieCore.DomainContracts;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MovieCore.Models.DTOs.ReviewDTOs;
+using Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MovieApi.Controllers
 {
-	//[Route("api/review")]
-	//[ApiController]
-	//public class ReviewsController : ControllerBase
-	//{
-	//	private readonly MovieApiContext _context;
-	//	private readonly IUnitOfWork _unitOfWork;
+	[Route("api/review")]
+	[ApiController]
+	public class ReviewsController : ControllerBase
+	{
+		private readonly IServiceManager _serviceManager;
 
-	//	public ReviewsController(MovieApiContext context, IUnitOfWork unitOfWork)
-	//	{
-	//		_context = context;
-	//		_unitOfWork = unitOfWork;
-	//	}
+		public ReviewsController(IServiceManager serviceManager)
+		{
+			_serviceManager = serviceManager;
+		}
 
-	//	// GET: api/movie/5/reviews
-	//	/// <summary>
-	//	/// Retrieves all reviews associated with a specific movie.
-	//	/// </summary>
-	//	/// <param name="movieId">The ID of the movie.</param>
-	//	/// <returns>A list of reviews for the specified movie.</returns>
-	//	/// <response code="200">Returns the list of review DTOs.</response>
-	//	/// <response code="404">If the movie with the specified ID does not exist.</response>
-	//	[Route("api/movie/{movieId}/reviews")]
-	//	[HttpGet]
-	//	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
-	//	[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-	//	[SwaggerOperation(
-	//		Summary = "Get all reviews for a movie",
-	//		Description = "Retrieves a list of reviews associated with a given movie ID."
-	//	)]
-	//	public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews(int movieId)
-	//	{
-	//		var movieExists = await _unitOfWork.Movies.AnyAsync(movieId);
+		// GET: api/movie/5/reviews
+		/// <summary>
+		/// Retrieves all reviews associated with a specific movie.
+		/// </summary>
+		/// <param name="movieId">The ID of the movie.</param>
+		/// <returns>A list of reviews for the specified movie.</returns>
+		/// <response code="200">Returns the list of review DTOs.</response>
+		/// <response code="404">If the movie with the specified ID does not exist.</response>
+		[Route("api/movie/{movieId}/reviews")]
+		[HttpGet]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReviewDto>))]
+		[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+		[SwaggerOperation(
+			Summary = "Get all reviews for a movie",
+			Description = "Retrieves a list of reviews associated with a given movie ID."
+		)]
+		public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews(int movieId) => 
+			Ok(await _serviceManager.ReviewServices.GetAllReviews(movieId));
+		
 
-	//		if (movieExists == false)
-	//		{
-	//			return Problem(
-	//				statusCode: StatusCodes.Status404NotFound,
-	//				title: "Invalid movie ID",
-	//				detail: $"No movie with ID {movieId} was found.",
-	//				instance: HttpContext.Request.Path
-	//			);
-	//		}
+		//	//	// GET: api/Reviews/5
+		//	//	[HttpGet("{id}")]
+		//	//	public async Task<ActionResult<Review>> GetReview(int id)
+		//	//	{
+		//	//		var review = await _context.Reviews.FindAsync(id);
 
-	//		IEnumerable<ReviewDto> movieReview = await _unitOfWork.Reviews.GetAllReviewsForMovieAsync(movieId);
+		//	//		if (review == null)
+		//	//		{
+		//	//			return NotFound();
+		//	//		}
 
-	//		return Ok(movieReview);
-	//	}
+		//	//		return review;
+		//	//	}
 
-	//	//	// GET: api/Reviews/5
-	//	//	[HttpGet("{id}")]
-	//	//	public async Task<ActionResult<Review>> GetReview(int id)
-	//	//	{
-	//	//		var review = await _context.Reviews.FindAsync(id);
+		//	//	// PUT: api/Reviews/5
+		//	//	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		//	//	[HttpPut("{id}")]
+		//	//	public async Task<IActionResult> PutReview(int id, Review review)
+		//	//	{
+		//	//		if (id != review.Id)
+		//	//		{
+		//	//			return BadRequest();
+		//	//		}
 
-	//	//		if (review == null)
-	//	//		{
-	//	//			return NotFound();
-	//	//		}
+		//	//		_context.Entry(review).State = EntityState.Modified;
 
-	//	//		return review;
-	//	//	}
+		//	//		try
+		//	//		{
+		//	//			await _context.SaveChangesAsync();
+		//	//		}
+		//	//		catch (DbUpdateConcurrencyException)
+		//	//		{
+		//	//			if (!ReviewExists(id))
+		//	//			{
+		//	//				return NotFound();
+		//	//			}
+		//	//			else
+		//	//			{
+		//	//				throw;
+		//	//			}
+		//	//		}
 
-	//	//	// PUT: api/Reviews/5
-	//	//	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-	//	//	[HttpPut("{id}")]
-	//	//	public async Task<IActionResult> PutReview(int id, Review review)
-	//	//	{
-	//	//		if (id != review.Id)
-	//	//		{
-	//	//			return BadRequest();
-	//	//		}
+		//	//		return NoContent();
+		//	//	}
 
-	//	//		_context.Entry(review).State = EntityState.Modified;
+		//	//	// POST: api/Reviews
+		//	//	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		//	//	[HttpPost]
+		//	//	public async Task<ActionResult<Review>> PostReview(Review review)
+		//	//	{
+		//	//		_context.Reviews.Add(review);
+		//	//		await _context.SaveChangesAsync();
 
-	//	//		try
-	//	//		{
-	//	//			await _context.SaveChangesAsync();
-	//	//		}
-	//	//		catch (DbUpdateConcurrencyException)
-	//	//		{
-	//	//			if (!ReviewExists(id))
-	//	//			{
-	//	//				return NotFound();
-	//	//			}
-	//	//			else
-	//	//			{
-	//	//				throw;
-	//	//			}
-	//	//		}
+		//	//		return CreatedAtAction("GetReview", new { id = review.Id }, review);
+		//	//	}
 
-	//	//		return NoContent();
-	//	//	}
+		//	//	// DELETE: api/Reviews/5
+		//	//	[HttpDelete("{id}")]
+		//	//	public async Task<IActionResult> DeleteReview(int id)
+		//	//	{
+		//	//		var review = await _context.Reviews.FindAsync(id);
+		//	//		if (review == null)
+		//	//		{
+		//	//			return NotFound();
+		//	//		}
 
-	//	//	// POST: api/Reviews
-	//	//	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-	//	//	[HttpPost]
-	//	//	public async Task<ActionResult<Review>> PostReview(Review review)
-	//	//	{
-	//	//		_context.Reviews.Add(review);
-	//	//		await _context.SaveChangesAsync();
+		//	//		_context.Reviews.Remove(review);
+		//	//		await _context.SaveChangesAsync();
 
-	//	//		return CreatedAtAction("GetReview", new { id = review.Id }, review);
-	//	//	}
+		//	//		return NoContent();
+		//	//	}
 
-	//	//	// DELETE: api/Reviews/5
-	//	//	[HttpDelete("{id}")]
-	//	//	public async Task<IActionResult> DeleteReview(int id)
-	//	//	{
-	//	//		var review = await _context.Reviews.FindAsync(id);
-	//	//		if (review == null)
-	//	//		{
-	//	//			return NotFound();
-	//	//		}
-
-	//	//		_context.Reviews.Remove(review);
-	//	//		await _context.SaveChangesAsync();
-
-	//	//		return NoContent();
-	//	//	}
-
-	//	//	private bool ReviewExists(int id)
-	//	//	{
-	//	//		return _context.Reviews.Any(e => e.Id == id);
-	//	//	}
-	//}
+		//	//	private bool ReviewExists(int id)
+		//	//	{
+		//	//		return _context.Reviews.Any(e => e.Id == id);
+		//	//	}
+	}
 }

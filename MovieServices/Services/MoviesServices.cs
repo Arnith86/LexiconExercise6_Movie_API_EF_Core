@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿// Ignore Spelling: Dto
+
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MovieCore.DomainContracts;
 using MovieCore.Models.DTOs.MovieDtos;
@@ -32,7 +34,7 @@ public class MoviesServices : IMoviesServices
 	}
 
 	/// <inheritdoc/>
-	public async Task<MovieWithGenreDto?> GetMovieAsync(int id)
+	public async Task<MovieWithGenreDto> GetMovieAsync(int id)
 	{
 		var movie = await _unitOfWork.Movies.GetMovieAsync(id, changeTracker: false);
 
@@ -53,7 +55,7 @@ public class MoviesServices : IMoviesServices
 	}
 
 	/// <inheritdoc/>
-	public async Task<MovieWithGenreDetailsDto?> GetMovieDetailsAsync(int id)
+	public async Task<MovieWithGenreDetailsDto> GetMovieDetailsAsync(int id)
 	{
 		var movieWithGenreDetailsDto = _mapper.Map<MovieWithGenreDetailsDto>(
 				await _unitOfWork.Movies.GetMovieDetailsAsync(id, changeTracker: false)
@@ -96,7 +98,7 @@ public class MoviesServices : IMoviesServices
 	}
 
 	/// <inheritdoc/>
-	public async Task<(MovieWithGenreIdDto? mwgiDto, int movieId)> AddMovieAsync(MovieCreateDto movieCreateDto)
+	public async Task<(MovieWithGenreIdDto mwgiDto, int movieId)> AddMovieAsync(MovieCreateDto movieCreateDto)
 	{
 		var genre = await _unitOfWork.MovieGenres.AnyAsync(movieCreateDto.MovieGenreId);
 

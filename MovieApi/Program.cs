@@ -57,7 +57,7 @@ namespace MovieApi
 			);
 			builder.Services.AddScoped<IReviewServices, ReviewServices>();
 			builder.Services.AddScoped(provider =>
-				new Lazy<IReviewServices>(() => provider.GetRequiredService<ReviewServices>())
+				new Lazy<IReviewServices>(() => provider.GetRequiredService<IReviewServices>())
 			);
 
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
